@@ -5,10 +5,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from manager.proveedorManager import ProveedorManager
+from manager.pedidoManager import PedidoManager
 import json
 
-# Instancia del manager
+# Instancias de los managers
 proveedor_manager = ProveedorManager()
+pedido_manager = PedidoManager()
 
 
 @api_view(['POST'])
