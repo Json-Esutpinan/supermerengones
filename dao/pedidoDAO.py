@@ -28,9 +28,9 @@ class PedidoDAO:
             Objeto Pedido con sus detalles o None si no existe
         """
         try:
-            # Obtener pedido
+            # Obtener pedido con información de sede
             response = self.supabase.table(self.tabla_pedido)\
-                .select("*")\
+                .select("*, sede(nombre)")\
                 .eq('id_pedido', id_pedido)\
                 .execute()
             

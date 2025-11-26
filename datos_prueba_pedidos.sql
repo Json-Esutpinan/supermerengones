@@ -47,9 +47,10 @@ VALUES
 ON CONFLICT (codigo) DO NOTHING;
 
 -- 5. Crear pedidos de prueba (para el primer cliente)
-INSERT INTO pedido (id_cliente, fecha, estado, total)
+INSERT INTO pedido (id_cliente, id_sede, fecha, estado, total)
 SELECT 
     c.id_cliente,
+    (SELECT MIN(id_sede) FROM sede LIMIT 1) as id_sede,
     TIMESTAMP '2025-11-20 14:30:00' as fecha,
     'completado' as estado,
     24000 as total
@@ -58,9 +59,10 @@ JOIN usuario u ON c.id_usuario = u.id_usuario
 WHERE u.email = 'juan.perez@example.com'
 LIMIT 1;
 
-INSERT INTO pedido (id_cliente, fecha, estado, total)
+INSERT INTO pedido (id_cliente, id_sede, fecha, estado, total)
 SELECT 
     c.id_cliente,
+    (SELECT MIN(id_sede) FROM sede LIMIT 1) as id_sede,
     TIMESTAMP '2025-11-21 10:15:00' as fecha,
     'completado' as estado,
     35000 as total
@@ -69,9 +71,10 @@ JOIN usuario u ON c.id_usuario = u.id_usuario
 WHERE u.email = 'juan.perez@example.com'
 LIMIT 1;
 
-INSERT INTO pedido (id_cliente, fecha, estado, total)
+INSERT INTO pedido (id_cliente, id_sede, fecha, estado, total)
 SELECT 
     c.id_cliente,
+    (SELECT MIN(id_sede) FROM sede LIMIT 1) as id_sede,
     TIMESTAMP '2025-11-24 16:45:00' as fecha,
     'pendiente' as estado,
     16000 as total
@@ -80,9 +83,10 @@ JOIN usuario u ON c.id_usuario = u.id_usuario
 WHERE u.email = 'juan.perez@example.com'
 LIMIT 1;
 
-INSERT INTO pedido (id_cliente, fecha, estado, total)
+INSERT INTO pedido (id_cliente, id_sede, fecha, estado, total)
 SELECT 
     c.id_cliente,
+    (SELECT MIN(id_sede) FROM sede LIMIT 1) as id_sede,
     TIMESTAMP '2025-11-25 09:00:00' as fecha,
     'en_proceso' as estado,
     40000 as total

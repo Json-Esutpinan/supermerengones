@@ -8,7 +8,7 @@ class Pedido:
     Entidad que representa un pedido en el sistema
     """
     
-    def __init__(self, id_pedido=None, id_cliente=None, fecha=None, 
+    def __init__(self, id_pedido=None, id_cliente=None, id_sede=None, fecha=None, 
                  estado='pendiente', total=0.0, created_at=None):
         """
         Constructor de Pedido
@@ -16,6 +16,7 @@ class Pedido:
         Args:
             id_pedido: ID único del pedido
             id_cliente: ID del cliente que realizó el pedido
+            id_sede: ID de la sede donde se procesa el pedido
             fecha: Fecha del pedido
             estado: Estado del pedido (pendiente, en_proceso, completado, cancelado)
             total: Total del pedido
@@ -23,6 +24,7 @@ class Pedido:
         """
         self.id_pedido = id_pedido
         self.id_cliente = id_cliente
+        self.id_sede = id_sede
         self.fecha = fecha
         self.estado = estado
         self.total = float(total) if total else 0.0
@@ -41,6 +43,7 @@ class Pedido:
         return {
             'id_pedido': self.id_pedido,
             'id_cliente': self.id_cliente,
+            'id_sede': self.id_sede,
             'fecha': self.fecha.isoformat() if isinstance(self.fecha, datetime) else self.fecha,
             'estado': self.estado,
             'total': float(self.total),
@@ -62,6 +65,7 @@ class Pedido:
         return Pedido(
             id_pedido=data.get('id_pedido'),
             id_cliente=data.get('id_cliente'),
+            id_sede=data.get('id_sede'),
             fecha=data.get('fecha'),
             estado=data.get('estado', 'pendiente'),
             total=data.get('total', 0.0),

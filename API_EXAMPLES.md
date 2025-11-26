@@ -76,6 +76,7 @@ GET http://127.0.0.1:8000/api/pedidos/cliente/1/historial/?estado=pendiente&fech
         {
             "id_pedido": 1,
             "id_cliente": 1,
+            "id_sede": 1,
             "fecha": "2025-11-20T14:30:00",
             "estado": "completado",
             "total": 25000.00,
@@ -109,6 +110,7 @@ GET http://127.0.0.1:8000/api/pedidos/5/
     "data": {
         "id_pedido": 5,
         "id_cliente": 1,
+        "id_sede": 1,
         "fecha": "2025-11-20T15:00:00",
         "estado": "pendiente",
         "total": 35000.00,
