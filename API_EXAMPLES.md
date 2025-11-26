@@ -167,6 +167,191 @@ GET http://127.0.0.1:8000/api/pedidos/?limite=50
 
 ---
 
+## RECLAMOS (HU19 - Atención y Gestión)
+
+### 1. Crear Reclamo
+```bash
+POST http://127.0.0.1:8000/api/reclamos/crear/
+Content-Type: application/json
+
+{
+    "id_pedido": 2,
+    "id_cliente": 1,
+    "descripcion": "El producto llegó con una esquina dañada. La caja estaba en mal estado y la decoración se corrió."
+}
+```
+
+**Respuesta:**
+```json
+{
+    "message": "Reclamo creado exitosamente",
+    "data": {
+        "id_reclamo": 1,
+        "id_pedido": 2,
+        "id_cliente": 1,
+        "descripcion": "El producto llegó con una esquina dañada...",
+        "estado": "abierto",
+        "fecha": "2025-11-21T10:30:00",
+        "fecha_resolucion": null
+    }
+}
+```
+
+### 2. Listar Reclamos de un Cliente
+```bash
+GET http://127.0.0.1:8000/api/reclamos/cliente/1/
+```
+
+**Respuesta:**
+```json
+{
+    "message": "Se encontraron 5 reclamos",
+    "data": [
+        {
+            "id_reclamo": 1,
+            "id_pedido": 2,
+            "id_cliente": 1,
+            "descripcion": "El producto llegó con una esquina dañada...",
+            "estado": "abierto",
+            "fecha": "2025-11-21T10:30:00",
+            "fecha_resolucion": null
+        },
+        {
+            "id_reclamo": 2,
+            "id_pedido": 3,
+            "id_cliente": 1,
+            "descripcion": "Ordené 2 Cupcakes de Vainilla pero solo me llegó 1...",
+            "estado": "resuelto",
+            "fecha": "2025-11-23T14:15:00",
+            "fecha_resolucion": "2025-11-24T09:00:00"
+        }
+    ]
+}
+```
+
+### 3. Listar Reclamos de un Pedido
+```bash
+GET http://127.0.0.1:8000/api/reclamos/pedido/2/
+```
+
+### 4. Obtener Detalle de un Reclamo
+```bash
+GET http://127.0.0.1:8000/api/reclamos/3/
+```
+
+**Respuesta:**
+```json
+{
+    "message": "Reclamo encontrado",
+    "data": {
+        "id_reclamo": 3,
+        "id_pedido": 4,
+        "id_cliente": 1,
+        "descripcion": "El Pie de Limón tiene un sabor diferente al que probé en la tienda...",
+        "estado": "en_revision",
+        "fecha": "2025-11-24T16:45:00",
+        "fecha_resolucion": null
+    }
+}
+```
+
+### 5. Filtrar Reclamos por Estado
+```bash
+# Reclamos abiertos
+GET http://127.0.0.1:8000/api/reclamos/estado/?estado=abierto
+
+# Reclamos en revisión
+GET http://127.0.0.1:8000/api/reclamos/estado/?estado=en_revision
+
+# Reclamos resueltos
+GET http://127.0.0.1:8000/api/reclamos/estado/?estado=resuelto
+
+# Reclamos cerrados
+GET http://127.0.0.1:8000/api/reclamos/estado/?estado=cerrado
+```
+
+### 6. Listar Todos los Reclamos
+```bash
+# Lista los primeros 100 reclamos
+GET http://127.0.0.1:8000/api/reclamos/
+
+# Con límite personalizado
+GET http://127.0.0.1:8000/api/reclamos/?limite=50
+```
+
+### 7. Cambiar Estado de un Reclamo
+```bash
+PATCH http://127.0.0.1:8000/api/reclamos/1/estado/
+Content-Type: application/json
+
+{
+    "estado": "en_revision"
+}
+```
+
+**Respuesta:**
+```json
+{
+    "message": "Estado del reclamo cambiado a en_revision",
+    "data": {
+        "id_reclamo": 1,
+        "id_pedido": 2,
+        "id_cliente": 1,
+        "descripcion": "El producto llegó con una esquina dañada...",
+        "estado": "en_revision",
+        "fecha": "2025-11-21T10:30:00",
+        "fecha_resolucion": null
+    }
+}
+```
+
+**Para resolver o cerrar:**
+```bash
+PATCH http://127.0.0.1:8000/api/reclamos/1/estado/
+Content-Type: application/json
+
+{
+    "estado": "resuelto"
+}
+```
+*Nota: Al cambiar a "resuelto" o "cerrado", se asigna automáticamente la fecha_resolucion*
+
+### 8. Agregar Respuesta a un Reclamo
+```bash
+POST http://127.0.0.1:8000/api/reclamos/1/respuesta/
+Content-Type: application/json
+
+{
+    "respuesta": "Lamentamos lo ocurrido. Hemos programado un reemplazo de su producto sin costo adicional para mañana."
+}
+```
+
+**Respuesta:**
+```json
+{
+    "message": "Respuesta agregada exitosamente",
+    "data": {
+        "id_reclamo": 1,
+        "id_pedido": 2,
+        "id_cliente": 1,
+        "descripcion": "El producto llegó con una esquina dañada...\n\n--- RESPUESTA ---\nLamentamos lo ocurrido. Hemos programado un reemplazo...",
+        "estado": "en_revision",
+        "fecha": "2025-11-21T10:30:00",
+        "fecha_resolucion": null
+    }
+}
+```
+
+---
+
+## Estados de Reclamo Disponibles
+- `abierto` - Reclamo creado, esperando atención
+- `en_revision` - Reclamo siendo revisado/atendido
+- `resuelto` - Reclamo resuelto satisfactoriamente
+- `cerrado` - Reclamo cerrado (con o sin resolución)
+
+---
+
 ## Endpoints Disponibles
 
 ### Proveedores
@@ -187,3 +372,15 @@ GET http://127.0.0.1:8000/api/pedidos/?limite=50
 | GET | `/api/pedidos/cliente/{id}/historial/` | Historial de cliente |
 | GET | `/api/pedidos/estado/{estado}/` | Listar por estado |
 | GET | `/api/pedidos/fecha/` | Listar por rango de fechas |
+
+### Reclamos (Gestión - HU19)
+| Método | URL | Descripción |
+|--------|-----|-------------|
+| GET | `/api/reclamos/` | Listar todos los reclamos |
+| POST | `/api/reclamos/crear/` | Crear nuevo reclamo |
+| GET | `/api/reclamos/{id}/` | Obtener detalle de reclamo |
+| GET | `/api/reclamos/cliente/{id}/` | Listar reclamos de cliente |
+| GET | `/api/reclamos/pedido/{id}/` | Listar reclamos de pedido |
+| GET | `/api/reclamos/estado/` | Filtrar por estado (query param) |
+| PATCH | `/api/reclamos/{id}/estado/` | Cambiar estado del reclamo |
+| POST | `/api/reclamos/{id}/respuesta/` | Agregar respuesta al reclamo |

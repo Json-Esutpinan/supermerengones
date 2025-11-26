@@ -26,6 +26,16 @@ from views.viewsSede import (
     desactivar_sede,
     vista_consolidada_sede
 )
+from views.viewsReclamo import (
+    listar_reclamos_cliente,
+    listar_reclamos_pedido,
+    obtener_reclamo,
+    listar_reclamos_por_estado,
+    listar_todos_reclamos,
+    crear_reclamo,
+    cambiar_estado_reclamo,
+    agregar_respuesta_reclamo
+)
 
 urlpatterns = [
     # Rutas para proveedores
@@ -50,4 +60,14 @@ urlpatterns = [
     path('sedes/<int:id_sede>/modificar/', modificar_sede, name='modificar_sede'),
     path('sedes/<int:id_sede>/desactivar/', desactivar_sede, name='desactivar_sede'),
     path('sedes/<int:id_sede>/consolidado/', vista_consolidada_sede, name='vista_consolidada_sede'),
+    
+    # Rutas para reclamos
+    path('reclamos/', listar_todos_reclamos, name='listar_todos_reclamos'),
+    path('reclamos/crear/', crear_reclamo, name='crear_reclamo'),
+    path('reclamos/<int:id_reclamo>/', obtener_reclamo, name='obtener_reclamo'),
+    path('reclamos/<int:id_reclamo>/estado/', cambiar_estado_reclamo, name='cambiar_estado_reclamo'),
+    path('reclamos/<int:id_reclamo>/respuesta/', agregar_respuesta_reclamo, name='agregar_respuesta_reclamo'),
+    path('reclamos/cliente/<int:id_cliente>/', listar_reclamos_cliente, name='listar_reclamos_cliente'),
+    path('reclamos/pedido/<int:id_pedido>/', listar_reclamos_pedido, name='listar_reclamos_pedido'),
+    path('reclamos/estado/', listar_reclamos_por_estado, name='listar_reclamos_por_estado'),
 ]

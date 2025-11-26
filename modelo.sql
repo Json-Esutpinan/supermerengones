@@ -188,3 +188,4 @@ ALTER TABLE "detalle_compra" ADD FOREIGN KEY ("id_compra") REFERENCES "compra" (
 ALTER TABLE "detalle_compra" ADD FOREIGN KEY ("id_insumo") REFERENCES "insumo" ("id_insumo") ON DELETE RESTRICT;
 ALTER TABLE "empleado" ADD FOREIGN KEY ("id_sede") REFERENCES "sede" ("id_sede") ON DELETE RESTRICT;
 ALTER TABLE "turno" ADD FOREIGN KEY ("id_empleado") REFERENCES "empleado" ("id_empleado") ON DELETE CASCADE;
+ALTER TABLE reclamo ALTER COLUMN estado SET DEFAULT 'abierto';
