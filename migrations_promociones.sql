@@ -68,13 +68,12 @@ INSERT INTO promocion (titulo, descripcion, descripcion_corta, tipo, valor, imag
     TRUE
 );
 
--- Asociar productos a promociones (ejemplos)
--- Nota: Reemplaza los id_producto con los IDs reales de tu tabla producto
+
 INSERT INTO promocion_producto (id_promocion, id_producto) VALUES
-(1, 1),  -- Promo 1 aplica a producto 1
-(1, 2),  -- Promo 1 aplica a producto 2
-(2, 3),  -- Promo 2 aplica a producto 3
-(3, 1), (3, 2), (3, 3);  -- Promo 3 aplica a todos
+(1, 1),  -- Promo 1 (20% Fresa) aplica a Merengón Grande
+(1, 2),  -- Promo 1 (20% Fresa) aplica a Merengón Especial
+(2, 3),  -- Promo 2 (2x1) aplica a Merengón Premium
+(3, 1), (3, 2), (3, 3), (3, 4);  -- Promo 3 ($5000 desc) aplica a todos
 
 -- Consultas útiles para verificar:
 -- SELECT * FROM promocion WHERE activo = TRUE;
