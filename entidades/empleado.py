@@ -1,14 +1,10 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+class Empleado:
+    def __init__(self, id_empleado=None, id_usuario=None, id_sede=None, cargo=None, fecha_ingreso=None):
+        self.id_empleado = id_empleado
+        self.id_usuario = id_usuario
+        self.id_sede = id_sede
+        self.cargo = cargo
+        self.fecha_ingreso = fecha_ingreso
 
-from entidades.Usuario import Usuario
-
-
-class Empleado(Usuario):
-    def __init__(self):
-        self.id_empleado = None
-        self.id_usuario = None
-        self.id_sede = None
-        self.id_turno = None
-        self.cargo = None
-        self.fecha_ingreso = None
+    def to_dict(self):
+        return self.__dict__

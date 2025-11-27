@@ -36,6 +36,11 @@ from views.viewsReclamo import (
     cambiar_estado_reclamo,
     agregar_respuesta_reclamo
 )
+from views.viewsAuth import (
+    login_view,
+    registrar_cliente_view,
+    usuario_actual_view
+)
 
 urlpatterns = [
     # Rutas para proveedores
@@ -70,4 +75,9 @@ urlpatterns = [
     path('reclamos/cliente/<int:id_cliente>/', listar_reclamos_cliente, name='listar_reclamos_cliente'),
     path('reclamos/pedido/<int:id_pedido>/', listar_reclamos_pedido, name='listar_reclamos_pedido'),
     path('reclamos/estado/', listar_reclamos_por_estado, name='listar_reclamos_por_estado'),
+
+    #Rutas para autenticación
+    path("auth/login/", login_view),
+    path("auth/registrar-cliente/", registrar_cliente_view),
+    path("auth/usuario/", usuario_actual_view),
 ]
