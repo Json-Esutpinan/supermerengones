@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Productos | Super Merengones{% endblock title %}
+
+{% block content %}
+<section class="featured-products">
+    <h3>Productos Destacados</h3>
+    <div class="carousel-wrapper">
+        <button class="nav-button" onclick="document.getElementById('productCarousel').scrollBy({left:-300, behavior:'smooth'})">◀</button>
+        <div id="productCarousel">
+            {% for p in products %}
+            <div class="product-card">
+                <div class="product-image-placeholder {{ p.tag }}">{{ p.name }}</div>
+                <div class="product-name">{{ p.name }}</div>
+                <div class="product-price">${{ p.price|intcomma }}</div>
+                <a class="button-secondary" href="{% url 'add_to_cart' p.id %}">Agregar</a>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="nav-button" onclick="document.getElementById('productCarousel').scrollBy({left:300, behavior:'smooth'})">▶</button>
+    </div>
+</section>
+{% endblock content %}

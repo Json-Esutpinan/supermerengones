@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Promociones | Super Merengones{% endblock title %}
+
+{% block content %}
+<section class="featured-products">
+    <h3>Promociones Activas</h3>
+    
+    {% if promos %}
+    <div class="carousel-container">
+        {% for promo in promos %}
+        <div class="product-card">
+            {% if promo.imagen_url %}
+                <img src="{{ promo.imagen_url }}" alt="{{ promo.titulo }}" style="height: 200px; object-fit: cover; width: 100%;">
+            {% else %}
+                <div class="product-image-placeholder">{{ promo.titulo|truncatewords:2 }}</div>
+            {% endif %}
+            
+            <div class="product-info" style="padding: 15px;">
+                <div class="product-name">{{ promo.titulo }}</div>
+                
+                {% if promo.tipo == 'descuento_porcentaje' %}
+                    <div class="product-price" style="color: #ff6600; font-size: 18px; font-weight: bold;">
+                        -{{ promo.valor }}%
+                    </div>
+                {% elif promo.tipo == 'descuento_monto' %}
+                    <div class="product-price" style="color: #ff6600; font-size: 18px; font-weight: bold;">
+                        -${{ promo.valor|floatformat:0 }}
+                    </div>
+                {% else %}
+                    <div class="product-price">{{ promo.tipo }}</div>
+                {% endif %}
+                
+                <p style="font-size: 13px; color: #666; margin: 10px 0;">{{ promo.descripcion }}</p>
+                
+                {% if promo.fecha_inicio or promo.fecha_fin %}
+                <p style="font-size: 11px; color: #999; margin: 5px 0;">
+                    {% if promo.fecha_fin %}
+                        Válido hasta: {{ promo.fecha_fin|date:"d/m/Y" }}
+                    {% endif %}
+                </p>
+                {% endif %}
+                
+                {% if promo.productos %}
+                <div style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                    <p style="font-size: 12px; font-weight: bold; margin: 5px 0;">Productos incluidos:</p>
+                    <ul style="font-size: 12px; margin: 5px 0; padding-left: 20px;">
+                        {% for prod in promo.productos|slice:":3" %}
+                            <li>{{ prod.nombre|truncatewords:2 }}</li>
+                        {% endfor %}
+                        {% if promo.productos|length > 3 %}
+                            <li>+{{ promo.productos|length|add:"-3" }} más</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <a class="button-secondary" href="{% url 'productos' %}" style="margin-top: 10px; display: block; text-align: center;">
+                    Ver Productos
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 40px; color: #999;">
+        <p>No hay promociones disponibles en este momento.</p>
+        <p>Revisa más tarde para obtener ofertas especiales en nuestros merengones.</p>
+        <a href="{% url 'productos' %}" class="button-primary" style="margin-top: 20px;">Ver Productos</a>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+    .product-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+</style>
+{% endblock content %}

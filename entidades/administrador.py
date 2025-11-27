@@ -1,11 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+class Administrador:
+    def __init__(self, id_admin=None, id_usuario=None, nivel_acceso="basico"):
+        self.id_admin = id_admin
+        self.id_usuario = id_usuario
+        self.nivel_acceso = nivel_acceso
 
-from entidades.Usuario import Usuario
-
-
-class Administrador(Usuario):
-    def __init__(self):
-        self.id_admin = None
-        self.id_usuario = None
-        self.nivel_acceso = None
+    def to_dict(self):
+        return self.__dict__

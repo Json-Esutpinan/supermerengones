@@ -1,12 +1,17 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+class Cliente:
+    def __init__(self, id_cliente=None, id_usuario=None, telefono=None, direccion=None):
+        self.id_cliente = id_cliente
+        self.id_usuario = id_usuario
+        self.telefono = telefono
+        self.direccion = direccion
 
-from entidades.Usuario import Usuario
+    def to_dict(self):
+        return {
+            "id_usuario": self.id_usuario,
+            "telefono": self.telefono,
+            "direccion": self.direccion     
+        }
+# Fin del archivo entidades/cliente.py con direccion
 
 
-class Cliente(Usuario):
-    def __init__(self):
-        self.id_cliente = None
-        self.id_usuario = None
-        self.nombre = None
-        self.telefono = None
+

@@ -151,7 +151,7 @@ class SedeManager:
             data["inventario"] = inventario.data
 
         if filtro in (None, "pedidos"):
-            pedidos = self.dao.supabase.table("pedido").select("*").execute()
+            pedidos = self.dao.supabase.table("pedido").select("*").eq("id_sede", id_sede).execute()
             data["pedidos"] = pedidos.data
 
         return {

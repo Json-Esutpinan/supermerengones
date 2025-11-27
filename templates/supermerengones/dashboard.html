@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Panel | Super Merengones{% endblock title %}
+
+{% block content %}
+<section style="max-width:900px;margin:40px auto;padding:20px;background:white;border-radius:8px;">
+    <h2>Panel de Usuario</h2>
+    <p>Bienvenido, <strong>{{ request.user.first_name|default:request.user.username }}</strong>. Aquí tienes las acciones disponibles:</p>
+    <ul style="list-style:none;padding:0;margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+        {% for a in actions %}
+        <li style="background:#fff7fb;border:1px solid #ffdce6;padding:12px;border-radius:8px;">
+            <a href="{{ a.url }}" style="text-decoration:none;color:var(--color-vino);font-weight:700;">{{ a.label }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <p style="margin-top:18px;"><a href="{% url 'logout' %}" class="button-secondary">Cerrar sesión</a></p>
+</section>
+{% endblock content %}

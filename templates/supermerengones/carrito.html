@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Carrito | Super Merengones{% endblock title %}
+
+{% load humanize %}
+{% block content %}
+<section class="featured-products">
+    <h3>Tu Carrito</h3>
+    {% if items %}
+        <ul>
+            {% for it in items %}
+                <li>{{ it.product.name }} — Cantidad: {{ it.quantity }} — Subtotal: ${{ it.total|intcomma }}</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'productos' %}" class="button-primary">Seguir comprando</a>
+    {% else %}
+        <p>Aún no tienes productos en el carrito.</p>
+        <a href="{% url 'productos' %}" class="button-primary">Ir a productos</a>
+    {% endif %}
+</section>
+{% endblock content %}
