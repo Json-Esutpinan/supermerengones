@@ -14,3 +14,4 @@ class ClienteDAO:
     def obtener_por_usuario(self, id_usuario):
         resp = self.supabase.table("cliente").select("*").eq("id_usuario", id_usuario).limit(1).execute()
         return resp
+# Fin del archivo dao/clienteDAO.py con direccion

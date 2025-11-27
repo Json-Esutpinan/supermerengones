@@ -11,6 +11,7 @@ class Cliente:
             "telefono": self.telefono,
             "direccion": self.direccion     
         }
+# Fin del archivo entidades/cliente.py con direccion
 
 
 
