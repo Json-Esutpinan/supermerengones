@@ -196,3 +196,57 @@ def listar_todos_pedidos(request):
             'message': f'Error al procesar la solicitud: {str(e)}',
             'data': []
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['PATCH'])
+def actualizar_estado_pedido(request, id_pedido):
+    """
+    Actualiza el estado de un pedido (HU20)
+    
+    PATCH /api/pedidos/{id_pedido}/estado/
+    
+    Body JSON:
+    {
+        "estado": "en_proceso",  // pendiente, en_proceso, completado, cancelado
+        "id_empleado": 1         // (opcional) ID del empleado que actualiza
+    }
+    
+    Transiciones permitidas:
+    - pendiente → en_proceso, cancelado
+    - en_proceso → completado, cancelado
+    - completado → (ninguna)
+    - cancelado → (ninguna)
+    """
+    try:
+        # Obtener datos del body
+        nuevo_estado = request.data.get('estado')
+        id_empleado = request.data.get('id_empleado')
+        
+        if not nuevo_estado:
+            return Response({
+                'success': False,
+                'message': 'El campo "estado" es requerido'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Actualizar el estado
+        resultado = pedido_manager.actualizarEstado(id_pedido, nuevo_estado, id_empleado)
+        
+        if resultado['success']:
+            return Response({
+                'success': True,
+                'message': resultado['message'],
+                'data': resultado['data'].to_dict() if resultado['data'] else None
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'success': False,
+                'message': resultado['message'],
+                'data': None
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': f'Error al procesar la solicitud: {str(e)}',
+            'data': None
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

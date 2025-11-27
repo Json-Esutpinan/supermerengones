@@ -161,6 +161,51 @@ GET http://127.0.0.1:8000/api/pedidos/?limite=50
 
 ---
 
+### 6. Actualizar Estado de Pedido (HU20)
+```bash
+PATCH http://127.0.0.1:8000/api/pedidos/3/estado/
+Content-Type: application/json
+
+{
+    "estado": "en_proceso",
+    "id_empleado": 1
+}
+```
+
+**Respuesta exitosa:**
+```json
+{
+    "success": true,
+    "message": "Estado del pedido actualizado de \"pendiente\" a \"en_proceso\"",
+    "data": {
+        "id_pedido": 3,
+        "id_cliente": 1,
+        "id_sede": 1,
+        "fecha": "2025-11-24T16:45:00",
+        "estado": "en_proceso",
+        "total": 16000.0,
+        "detalles": []
+    }
+}
+```
+
+**Respuesta con error (transición inválida):**
+```json
+{
+    "success": false,
+    "message": "Transición de estado no permitida: completado → en_proceso",
+    "data": null
+}
+```
+
+**Transiciones permitidas:**
+- `pendiente` → `en_proceso`, `cancelado`
+- `en_proceso` → `completado`, `cancelado`
+- `completado` → (ninguna - estado final)
+- `cancelado` → (ninguna - estado final)
+
+---
+
 ## Estados de Pedido Disponibles
 - `pendiente` - Pedido creado, esperando procesamiento
 - `en_proceso` - Pedido en preparación
@@ -366,11 +411,12 @@ Content-Type: application/json
 | PATCH | `/api/proveedores/{id}/estado/` | Cambiar estado (activar/desactivar) |
 | DELETE | `/api/proveedores/{id}/desactivar/` | Desactivar proveedor |
 
-### Pedidos (Historial - HU17)
+### Pedidos (Historial - HU17, Actualización Estado - HU20)
 | Método | URL | Descripción |
 |--------|-----|-------------|
 | GET | `/api/pedidos/` | Listar todos los pedidos |
 | GET | `/api/pedidos/{id}/` | Obtener detalle de pedido |
+| PATCH | `/api/pedidos/{id}/estado/` | **Actualizar estado de pedido (HU20)** |
 | GET | `/api/pedidos/cliente/{id}/historial/` | Historial de cliente |
 | GET | `/api/pedidos/estado/{estado}/` | Listar por estado |
 | GET | `/api/pedidos/fecha/` | Listar por rango de fechas |

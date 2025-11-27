@@ -182,6 +182,32 @@ class PedidoDAO:
             print(f"Error al listar todos los pedidos: {e}")
             return []
     
+    def actualizar_estado(self, id_pedido, nuevo_estado):
+        """
+        Actualiza el estado de un pedido
+        
+        Args:
+            id_pedido: ID del pedido a actualizar
+            nuevo_estado: Nuevo estado del pedido (pendiente, en_proceso, completado, cancelado)
+            
+        Returns:
+            Objeto Pedido actualizado o None si hay error
+        """
+        try:
+            response = self.supabase.table(self.tabla_pedido)\
+                .update({'estado': nuevo_estado})\
+                .eq('id_pedido', id_pedido)\
+                .execute()
+            
+            if response.data:
+                return Pedido.from_dict(response.data[0])
+            
+            return None
+            
+        except Exception as e:
+            print(f"Error al actualizar estado del pedido: {e}")
+            return None
+    
     def _cargar_detalles(self, pedido):
         """
         Carga los detalles de un pedido (método privado)

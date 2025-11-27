@@ -195,12 +195,75 @@ class PedidoManager:
         """
         pass
 
-    def actualizarEstado(self, id_pedido, estado, id_empleado):
+    def actualizarEstado(self, id_pedido, nuevo_estado, id_empleado=None):
         """
-        TODO: Implementar en otra HU
-        Cambia el estado del pedido
+        Actualiza el estado de un pedido con validaciones (HU20)
+        
+        Args:
+            id_pedido: ID del pedido a actualizar
+            nuevo_estado: Nuevo estado del pedido
+            id_empleado: ID del empleado que realiza el cambio (opcional)
+            
+        Returns:
+            dict con 'success', 'message' y 'data' (pedido actualizado)
         """
-        pass
+        try:
+            # Validar que el estado sea válido
+            estados_validos = ['pendiente', 'en_proceso', 'completado', 'cancelado']
+            if nuevo_estado not in estados_validos:
+                return {
+                    'success': False,
+                    'message': f'Estado inválido. Estados permitidos: {", ".join(estados_validos)}',
+                    'data': None
+                }
+            
+            # Verificar que el pedido existe
+            pedido_actual = self.dao.obtener_por_id(id_pedido)
+            if not pedido_actual:
+                return {
+                    'success': False,
+                    'message': 'Pedido no encontrado',
+                    'data': None
+                }
+            
+            # Validar transiciones de estado permitidas
+            transiciones_validas = {
+                'pendiente': ['en_proceso', 'cancelado'],
+                'en_proceso': ['completado', 'cancelado'],
+                'completado': [],  # No se puede cambiar desde completado
+                'cancelado': []    # No se puede cambiar desde cancelado
+            }
+            
+            estado_actual = pedido_actual.estado
+            if nuevo_estado not in transiciones_validas.get(estado_actual, []):
+                return {
+                    'success': False,
+                    'message': f'Transición de estado no permitida: {estado_actual} → {nuevo_estado}',
+                    'data': None
+                }
+            
+            # Actualizar el estado
+            pedido_actualizado = self.dao.actualizar_estado(id_pedido, nuevo_estado)
+            
+            if not pedido_actualizado:
+                return {
+                    'success': False,
+                    'message': 'Error al actualizar el estado del pedido',
+                    'data': None
+                }
+            
+            return {
+                'success': True,
+                'message': f'Estado del pedido actualizado de "{estado_actual}" a "{nuevo_estado}"',
+                'data': pedido_actualizado
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'Error al actualizar estado: {str(e)}',
+                'data': None
+            }
 
     def listarPedidoPorCliente(self, id_cliente):
         """

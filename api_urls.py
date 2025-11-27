@@ -15,7 +15,8 @@ from views.viewsPedidos import (
     obtener_detalle_pedido,
     listar_pedidos_por_estado,
     listar_pedidos_por_fecha,
-    listar_todos_pedidos
+    listar_todos_pedidos,
+    actualizar_estado_pedido
 )
 
 from views.viewsSede import (
@@ -49,6 +50,7 @@ urlpatterns = [
     # Rutas para pedidos (historial)
     path('pedidos/', listar_todos_pedidos, name='listar_todos_pedidos'),
     path('pedidos/<int:id_pedido>/', obtener_detalle_pedido, name='obtener_detalle_pedido'),
+    path('pedidos/<int:id_pedido>/estado/', actualizar_estado_pedido, name='actualizar_estado_pedido'),
     path('pedidos/cliente/<int:id_cliente>/historial/', historial_pedidos_cliente, name='historial_pedidos_cliente'),
     path('pedidos/estado/<str:estado>/', listar_pedidos_por_estado, name='listar_pedidos_por_estado'),
     path('pedidos/fecha/', listar_pedidos_por_fecha, name='listar_pedidos_por_fecha'),
