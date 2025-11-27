@@ -167,6 +167,34 @@ CREATE TABLE "turno" (
   "hora_inicio" time NOT NULL,
   "hora_fin" time NOT NULL
 );
+-- Tabla de promociones
+CREATE TABLE IF NOT EXISTS promocion (
+    id_promocion SERIAL PRIMARY KEY,
+    titulo VARCHAR(200) NOT NULL,
+    descripcion TEXT,
+    descripcion_corta VARCHAR(500),
+    tipo VARCHAR(50) NOT NULL, -- 'descuento_porcentaje', 'descuento_monto', 'combo'
+    valor DECIMAL(10, 2) NOT NULL,
+    imagen_url VARCHAR(500),
+    fecha_inicio TIMESTAMP,
+    fecha_fin TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+-- Tabla de relación: promoción - producto (una promoción puede aplicar a varios productos)
+CREATE TABLE IF NOT EXISTS promocion_producto (
+    id_promocion_producto SERIAL PRIMARY KEY,
+    id_promocion INTEGER NOT NULL REFERENCES promocion(id_promocion) ON DELETE CASCADE,
+    id_producto INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(id_promocion, id_producto)
+);
+-- Índices para optimizar queries
+CREATE INDEX IF NOT EXISTS idx_promocion_activo ON promocion(activo);
+CREATE INDEX IF NOT EXISTS idx_promocion_fecha ON promocion(fecha_inicio, fecha_fin);
+CREATE INDEX IF NOT EXISTS idx_promocion_producto_promo ON promocion_producto(id_promocion);
+CREATE INDEX IF NOT EXISTS idx_promocion_producto_prod ON promocion_producto(id_producto);
 
 -- foreign keys (unchanged)
 ALTER TABLE "cliente" ADD FOREIGN KEY ("id_usuario") REFERENCES "usuario" ("id_usuario") ON DELETE CASCADE;
