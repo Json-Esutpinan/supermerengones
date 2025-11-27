@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio | Super Merengones{% endblock title %}
+
+{% block content %}
+    
+    <section class="hero-section">
+        <h2 class="hero-title">¡La dulzura que mereces!</h2>
+        <p class="hero-subtitle">Explora nuestros merengones y haz tu pedido.</p>
+        <a href="#" class="button-primary">Ver todos los merengones</a>
+    </section>
+
+    <section class="featured-products">
+        <h3>✨ Nuestros Favoritos de la Semana</h3>
+    
+    <div class="carousel-wrapper">
+        <button class="nav-button prev-button" onclick="scrollCarousel(-1)">&#10094;</button>
+        
+        <div class="carousel-container" id="productCarousel"> 
+            </div>
+        
+        <button class="nav-button next-button" onclick="scrollCarousel(1)">&#10095;</button>
+    </div>
+</section>
+    
+{% endblock content %}

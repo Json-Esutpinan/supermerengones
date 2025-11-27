@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    
+    <title>{% block title %}Super Merengones{% endblock title %}</title>
+    
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    {% block extra_css %}{% endblock extra_css %}
+</head>
+
+<body>
+    <div id="wrapper"> 
+        <header class="main-header">
+            <div class="logo-container">
+                <h1>Super Merengones</h1>
+            </div>
+            
+            <nav class="main-nav">
+                <a href="{% url 'index' %}" class="nav-item">Inicio</a>
+                
+                <div class="dropdown">
+                    <a href="#" class="nav-item dropdown-toggle">Ver Productos</a>
+                    
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">🍓 Fresa</a>
+                        <a href="#" class="dropdown-item">🍊 Maracuyá</a>
+                        <a href="#" class="dropdown-item">🥭 Mango</a>
+                        <a href="#" class="dropdown-item">✨ Especiales</a>
+                    </div>
+                </div>
+                <a href="#" class="nav-item">Acerca de</a>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            {% block content %}
+            {% endblock content %}
+        </main>
+
+        <footer class="main-footer">
+            <p>&copy; 2025 Super Merengones. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+    
+    {% block extra_js %}
+        <script>
+            // Función simple para desplazar el carrusel
+            function scrollCarousel(direction) {
+                const carousel = document.getElementById('productCarousel');
+                const cardWidth = 300; // Ancho aproximado de la tarjeta + gap
+                
+                // Calcula la nueva posición de desplazamiento
+                carousel.scrollLeft += direction * cardWidth;
+            }
+        </script>
+    {% endblock extra_js %}
+</body>
+</html>
