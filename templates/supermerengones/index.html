@@ -1,26 +1,31 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}Inicio | Super Merengones{% endblock title %}
 
 {% block content %}
-    
-    <section class="hero-section">
-        <h2 class="hero-title">¡La dulzura que mereces!</h2>
-        <p class="hero-subtitle">Explora nuestros merengones y haz tu pedido.</p>
-        <a href="#" class="button-primary">Ver todos los merengones</a>
-    </section>
+<section class="hero-section">
+    <h2 class="hero-title">¡La dulzura que mereces!</h2>
+    <p class="hero-subtitle">Explora nuestros merengones y haz tu pedido.</p>
+    <a href="{% url 'productos' %}" class="button-primary">Ver todos los merengones</a>
+</section>
+<section class="about-section" style="padding:40px 20px; text-align:center; background:#fff; margin-top:20px;">
+    <h3>Sobre Nosotros</h3>
+    <p style="max-width:900px;margin:0 auto;">En Super Merengones somos una pastelería artesanal especializada en merengones frescos y creativos. Usamos ingredientes de la mejor calidad y recetas tradicionales con toques modernos. Nuestro objetivo es llevar sonrisas con cada bocado — hechos con amor en cada sede.</p>
+    <p style="margin-top:12px;">Visita nuestras sedes, descubre promociones especiales y ordena en línea. ¡Te esperamos!</p>
+</section>
 
-    <section class="featured-products">
-        <h3>✨ Nuestros Favoritos de la Semana</h3>
-    
-    <div class="carousel-wrapper">
-        <button class="nav-button prev-button" onclick="scrollCarousel(-1)">&#10094;</button>
-        
-        <div class="carousel-container" id="productCarousel"> 
-            </div>
-        
-        <button class="nav-button next-button" onclick="scrollCarousel(1)">&#10095;</button>
+<section class="featured-products" style="margin-top:24px;">
+    <h3>Nuestro Equipo</h3>
+    <div class="carousel-container">
+        {% for member in team %}
+        <div class="product-card">
+            <div class="product-image-placeholder {{ member.avatar }}">{{ member.name|slice:":1" }}</div>
+            <div class="product-name">{{ member.name }}</div>
+            <div style="font-weight:600;color:var(--color-vino);">{{ member.role }}</div>
+            <p style="color:#666;margin-top:8px">{{ member.bio }}</p>
+        </div>
+        {% endfor %}
     </div>
 </section>
-    
 {% endblock content %}

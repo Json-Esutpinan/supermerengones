@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Sedes | Super Merengones{% endblock title %}
+
+{% block content %}
+<section class="featured-products">
+    <h3>Nuestras Sedes</h3>
+    <div class="carousel-container">
+        {% if sedes %}
+            {% for s in sedes %}
+            <div class="product-card">
+                <h4>{{ s.nombre }}</h4>
+                {% if s.direccion %}<p>{{ s.direccion }}</p>{% endif %}
+                {% if s.telefono %}<p>Tel: {{ s.telefono }}</p>{% endif %}
+                <p>Estado: {% if s.activo %}Activo{% else %}Inactivo{% endif %}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="product-card">
+                <h4>No hay sedes registradas</h4>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock content %}

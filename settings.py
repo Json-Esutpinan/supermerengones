@@ -6,6 +6,9 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Ajuste: `manage.py`, `settings.py`, `templates/` y `static/` están
+# en la misma carpeta del proyecto aquí, así que apuntamos a la carpeta
+# que contiene este fichero `settings.py`.
 BASE_DIR = Path(__file__).resolve().parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -24,8 +27,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'rest_framework',
     'corsheaders',
+    # Añade aquí tus aplicaciones si tienes alguna
 ]
 
 MIDDLEWARE = [
@@ -44,7 +49,8 @@ ROOT_URLCONF = 'urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], 
+        # DIRS para las plantillas de proyecto. Usamos la sintaxis moderna de Path.
+        'DIRS': [BASE_DIR / 'templates'], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,11 +95,23 @@ TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/' 
+# ---------------------------------------------
+# Static files (CSS, JavaScript, Images) - CORREGIDO
+# ---------------------------------------------
+
+# La URL a usar al referenciar archivos estáticos en las plantillas.
+STATIC_URL = 'static/' 
+
+# Directorios adicionales donde Django buscará archivos estáticos 
+# (Aquí es donde definimos la carpeta 'static' en la raíz del proyecto)
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    BASE_DIR / 'static',
 ]
+# ---------------------------------------------
+# Fin de la sección Static files
+# ---------------------------------------------
+
+
 # **********************************************
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

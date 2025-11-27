@@ -26,6 +26,10 @@ from views.viewsSede import (
     desactivar_sede,
     vista_consolidada_sede
 )
+from views.viewsProducto import (
+    listar_productos,
+    obtener_producto,
+)
 from views.viewsReclamo import (
     listar_reclamos_cliente,
     listar_reclamos_pedido,
@@ -40,6 +44,13 @@ from views.viewsAuth import (
     login_view,
     registrar_cliente_view,
     usuario_actual_view
+)
+from views.viewsPromocion import (
+    listar_promociones,
+    obtener_promocion,
+    crear_promocion,
+    modificar_promocion,
+    eliminar_promocion
 )
 
 urlpatterns = [
@@ -75,6 +86,17 @@ urlpatterns = [
     path('reclamos/cliente/<int:id_cliente>/', listar_reclamos_cliente, name='listar_reclamos_cliente'),
     path('reclamos/pedido/<int:id_pedido>/', listar_reclamos_pedido, name='listar_reclamos_pedido'),
     path('reclamos/estado/', listar_reclamos_por_estado, name='listar_reclamos_por_estado'),
+
+    # Rutas para productos
+    path('productos/', listar_productos, name='listar_productos'),
+    path('productos/<int:id_producto>/', obtener_producto, name='obtener_producto'),
+
+    # Rutas para promociones
+    path('promociones/', listar_promociones, name='listar_promociones'),
+    path('promociones/crear/', crear_promocion, name='crear_promocion'),
+    path('promociones/<int:id>/', obtener_promocion, name='obtener_promocion'),
+    path('promociones/<int:id>/modificar/', modificar_promocion, name='modificar_promocion'),
+    path('promociones/<int:id>/eliminar/', eliminar_promocion, name='eliminar_promocion'),
 
     #Rutas para autenticación
     path("auth/login/", login_view),
