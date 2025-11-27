@@ -149,7 +149,7 @@ SELECT
     p.fecha,
     p.estado,
     p.total,
-    COUNT(dp.id_detalle_pedido) as cantidad_items
+    COUNT(dp.id_detalle) as cantidad_items
 FROM pedido p
 LEFT JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
 WHERE p.id_cliente = 1  -- Cambiar por ID de cliente a consultar
@@ -163,7 +163,7 @@ SELECT
     s.nombre as sede,
     p.fecha,
     p.total,
-    COUNT(dp.id_detalle_pedido) as items
+    COUNT(dp.id_detalle) as items
 FROM pedido p
 JOIN cliente c ON p.id_cliente = c.id_cliente
 JOIN usuario u ON c.id_usuario = u.id_usuario
