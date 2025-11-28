@@ -23,8 +23,10 @@ supermerengones/
 │   ├── __init__.py
 │   └── proveedorManager.py      # Lógica de negocio
 │
+├── views/
+│   └── viewsProveedor.py        # API endpoints
+|
 ├── config.py                     # Configuración de Supabase
-├── views.py                      # API endpoints
 ├── api_urls.py                   # Rutas de la API
 ├── urls.py                       # URLs principales
 ├── settings.py                   # Configuración Django
