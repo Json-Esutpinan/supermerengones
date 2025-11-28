@@ -6,6 +6,10 @@ from django.urls import reverse
 from config import get_supabase_client, TABLA_PRODUCTO
 from manager.sedeManager import SedeManager
 from django.contrib.auth.decorators import login_required
+from manager.authManager import AuthManager
+import bcrypt
+from dao.usuarioDAO import UsuarioDAO
+from django.http import HttpResponseForbidden
 
 
 # Datos de ejemplo de productos (temporal, hasta integrar DB)
@@ -218,9 +222,32 @@ def login_view(request):
             login(request, user)
             messages.success(request, f'Bienvenido {user.username}!')
             return redirect(next_url)
-        else:
-            messages.error(request, 'Credenciales inválidas. Intenta de nuevo.')
-            return redirect(reverse('login') + f'?next={next_url}')
+
+        # Fallback: intentar autenticar contra la tabla `usuario` usando AuthManager (bcrypt)
+        try:
+            am = AuthManager()
+            resp = am.login(email, password)
+            if resp.get('success') and resp.get('data'):
+                # sincronizar con Django User para establecer sesión
+                try:
+                    django_user, created = User.objects.get_or_create(username=email, defaults={'email': email, 'first_name': getattr(resp['data'], 'nombre', '') or ''})
+                    # establecer contraseña en el usuario Django para permitir authenticate/login
+                    django_user.set_password(password)
+                    django_user.save()
+                    # volver a autenticar con Django y establecer sesión
+                    user = authenticate(request, username=email, password=password)
+                    if user is not None:
+                        login(request, user)
+                        messages.success(request, f'Bienvenido {user.username}!')
+                        return redirect(next_url)
+                except Exception:
+                    pass
+
+        except Exception:
+            pass
+
+        messages.error(request, 'Credenciales inválidas. Intenta de nuevo.')
+        return redirect(reverse('login') + f'?next={next_url}')
     # GET -> renderizar form
     return render(request, 'supermerengones/login.html')
 
@@ -235,16 +262,31 @@ def register_view(request):
         name = request.POST.get('name') or ''
         email = request.POST.get('email')
         password = request.POST.get('password')
+        telefono = request.POST.get('telefono') or ''
+        direccion = request.POST.get('direccion') or ''
         if not email or not password:
             messages.error(request, 'Email y contraseña son requeridos.')
             return redirect('register')
 
-        if User.objects.filter(username=email).exists():
-            messages.error(request, 'Ya existe un usuario con ese email.')
+        # Primero, intentar crear usuario en la tabla personalizada usando AuthManager
+        try:
+            am = AuthManager()
+            resp = am.registrarCliente(name, telefono, email, direccion, password)
+            if not resp.get('success'):
+                messages.error(request, resp.get('message') or 'Error al registrar usuario')
+                return redirect('register')
+        except Exception:
+            messages.error(request, 'Error al registrar usuario')
             return redirect('register')
 
-        user = User.objects.create_user(username=email, email=email, password=password, first_name=name)
-        user.save()
+        # Luego, crear/sincronizar Django User para poder iniciar sesión normalmente
+        try:
+            if not User.objects.filter(username=email).exists():
+                user = User.objects.create_user(username=email, email=email, password=password, first_name=name)
+                user.save()
+        except Exception:
+            pass
+
         messages.success(request, 'Cuenta creada. Por favor inicia sesión.')
         return redirect('login')
     return render(request, 'supermerengones/register.html')

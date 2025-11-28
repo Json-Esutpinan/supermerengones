@@ -1,0 +1,331 @@
+/* ------------------------------------------- */
+/* 1. CONFIGURACIÓN GLOBAL Y FUENTES */
+/* ------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Pacifico&display=swap');
+
+:root {
+    --color-pink-dulce: #FF8FBC; /* Rosa Dulce */
+    --color-vino: #B05278;      /* Rosa Oscuro/Vino */
+    --color-dark: #333333;
+    --color-light: #ffffff;
+    --color-orange: #ff6600; /* Usado en tus botones */
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+    color: var(--color-dark);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* ------------------------------------------- */
+/* 2. ENCABEZADO Y NAVEGACIÓN (¡LA CORRECCIÓN CLAVE!) */
+/* ------------------------------------------- */
+
+/* Configuración de la Cabecera para Alinear Logo y Menú */
+.main-header {
+    background-color: var(--color-light); /* Fondo claro o blanco */
+    border-bottom: 3px solid var(--color-pink-dulce); /* Línea de color dulce */
+    padding: 10px 40px;
+    display: flex; /* <-- HABILITA LA ALINEACIÓN HORIZONTAL */
+    justify-content: space-between; /* <-- SEPARA EL LOGO DEL MENÚ */
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo del Título/Logo */
+.main-header h1 {
+    font-family: 'Pacifico', cursive; /* Fuente para el título principal */
+    font-size: 2.2em;
+    margin: 0;
+    color: var(--color-vino); /* Color para el contraste */
+    white-space: nowrap; /* Evita que el título se rompa */
+}
+
+/* Logo image if present */
+.site-logo {
+    height: 56px;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.brand-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Alineación Horizontal de todos los enlaces del Menú */
+.main-nav {
+    display: flex;
+    gap: 15px; /* Espacio entre los enlaces principales */
+    align-items: center;
+}
+
+/* Botón hamburguesa para móviles */
+.nav-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    font-size: 1.6em;
+    cursor: pointer;
+}
+
+/* Alineación de los botones de autenticación (dentro del menú) */
+.auth-links {
+    /* Ya tienes margin-left: auto; en tu CSS, lo cual está bien si necesitas
+       que estos botones empujen a la derecha. Lo dejamos simple aquí: */
+    display: flex;
+    gap: 10px;
+    margin-left: 20px;
+}
+
+/* Estilo de los Enlaces de Navegación */
+.nav-item {
+    text-decoration: none;
+    color: var(--color-dark);
+    font-weight: 500;
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.nav-item:hover {
+    color: var(--color-vino);
+}
+
+/* ------------------------------------------- */
+/* 3. BOTONES Y ESTILOS DE COMPONENTES */
+/* ------------------------------------------- */
+
+.button-primary, .button-secondary {
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid transparent; /* Base para evitar CLS al hacer hover */
+}
+
+.button-primary {
+    background-color: var(--color-orange); /* Usando el color naranja de tu CSS */
+    color: var(--color-light);
+    border-color: var(--color-orange);
+}
+
+.button-primary:hover {
+    background-color: #ff8800; /* Naranja más oscuro */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.button-secondary {
+    background-color: var(--color-light);
+    border-color: var(--color-orange);
+    color: var(--color-orange);
+}
+
+.button-secondary:hover {
+    background-color: #ffe0b3;
+}
+
+/* Estilos de la Sección Hero */
+.hero-section {
+    text-align: center;
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #fce9f1, #fff0f5); /* Degradado suave */
+}
+
+.hero-title {
+    font-size: 3em;
+    color: var(--color-vino);
+    margin-bottom: 10px;
+}
+
+.hero-subtitle {
+    font-size: 1.2em;
+    color: var(--color-dark);
+    margin-bottom: 30px;
+}
+
+/* ------------------------------------------- */
+/* 4. SECCIÓN DE PRODUCTOS (CARRUSEL) */
+/* ------------------------------------------- */
+
+.featured-products {
+    padding: 30px 20px;
+    background-color: var(--color-light);
+    text-align: center;
+}
+
+.featured-products h3 {
+    font-size: 1.8em;
+    color: var(--color-vino);
+    margin-bottom: 25px;
+}
+
+.carousel-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.product-card {
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    padding: 15px;
+    width: 280px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.product-image-placeholder {
+    height: 150px;
+    background-color: var(--color-pink-dulce);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2em;
+    background-size: cover;
+    background-position: center;
+}
+
+.product-image-placeholder.fresa { background-color: #ff69b4; }
+.product-image-placeholder.maracuya { background-color: #ffd700; }
+.product-image-placeholder.mixto { background-color: #8b0000; }
+
+.product-name {
+    color: var(--color-pink-dulce);
+    margin: 5px 0;
+}
+
+.product-price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--color-dark);
+    margin-bottom: 15px;
+}
+
+/* ------------------------------------------- */
+/* 5. CARRUSEL Y BOTONES (JS RELATED) */
+/* ------------------------------------------- */
+.carousel-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+#productCarousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    width: 100%;
+    padding: 20px 0;
+}
+
+.nav-button {
+    background-color: var(--color-pink-dulce);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    z-index: 5;
+    font-size: 1.5em;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin: 0 10px;
+    line-height: 1;
+}
+
+.nav-button:hover {
+    background-color: var(--color-vino);
+}
+
+/* ------------------------------------------- */
+/* 6. PIE DE PÁGINA */
+/* ------------------------------------------- */
+.main-footer {
+    background-color: var(--color-vino);
+    color: var(--color-light);
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+/* ------------------------------------------- */
+/* 7. RESPONSIVIDAD (Móviles) */
+/* ------------------------------------------- */
+
+@media (max-width: 900px) {
+    .main-header {
+        flex-direction: column; /* Apilar en móviles */
+        padding: 12px 16px;
+    }
+
+    .nav-toggle { display: block; }
+
+    .main-nav {
+        flex-direction: column; /* Apilar enlaces de menú */
+        gap: 10px;
+        margin-top: 10px;
+        width: 100%;
+        align-items: stretch;
+        display: none; /* hidden by default in mobile, toggled via JS */
+    }
+
+    .nav-item {
+        text-align: center;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(176, 82, 120, 0.1);
+    }
+
+    .auth-links {
+        margin-left: 0;
+        margin-top: 10px;
+        justify-content: space-around; /* Distribuir los botones */
+    }
+}
+
+/* Small JS helper style: when nav-open class added to header show nav */
+.main-header.nav-open .main-nav {
+    display: flex;
+}
+
+/* Hero refinement */
+.hero-section {
+    text-align: center;
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #fce9f1, #fff0f5);
+    background-image: url('../images/hero.svg');
+    background-repeat: no-repeat;
+    background-position: right 10% top 20%;
+    background-size: 420px;
+}
+
+/* Make product carousel responsive */
+#productCarousel { overflow-x: auto; padding-bottom: 10px; }
+
+/* Small tweaks to buttons on small screens */
+@media (max-width: 480px) {
+    .button-primary, .button-secondary { padding: 10px; font-size: 0.95em; }
+    .hero-title { font-size: 2rem; }
+    .hero-section { padding: 60px 12px; background-size: 260px; }
+}
