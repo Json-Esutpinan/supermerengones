@@ -12,7 +12,14 @@
                 <li>{{ it.product.name }} — Cantidad: {{ it.quantity }} — Subtotal: ${{ it.total|intcomma }}</li>
             {% endfor %}
         </ul>
-        <a href="{% url 'productos' %}" class="button-primary">Seguir comprando</a>
+        <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
+            <a href="{% url 'productos' %}" class="button-secondary">Seguir comprando</a>
+            <a href="{% url 'pedido_crear' %}" class="button-secondary">Finalizar pedido</a>
+            <form method="post" action="{% url 'carrito_crear_pedido' %}">
+                {% csrf_token %}
+                <button type="submit" class="button-primary">Crear pedido desde carrito</button>
+            </form>
+        </div>
     {% else %}
         <p>Aún no tienes productos en el carrito.</p>
         <a href="{% url 'productos' %}" class="button-primary">Ir a productos</a>

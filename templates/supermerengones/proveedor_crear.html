@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo Proveedor{% endblock title %}
+{% block content %}
+<h2>Nuevo Proveedor</h2>
+<form method="post">
+  {% csrf_token %}
+  <label>Nombre</label>
+  <input type="text" name="nombre" required>
+  <label>Teléfono</label>
+  <input type="text" name="telefono">
+  <label>Email</label>
+  <input type="email" name="email">
+  <label>Dirección</label>
+  <input type="text" name="direccion">
+  <button type="submit">Crear</button>
+</form>
+{% endblock %}

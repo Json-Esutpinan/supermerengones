@@ -1,0 +1,30 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Mis Notificaciones{% endblock %}
+{% block content %}
+<h2>Mis Notificaciones</h2>
+<div class="mb-2">
+  <a href="{% url 'notificaciones_marcar_todas' %}" class="btn btn-sm btn-warning">Marcar todas como leídas</a>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr><th>Fecha</th><th>Título</th><th>Mensaje</th><th>Estado</th><th>Acción</th></tr>
+  </thead>
+  <tbody>
+    {% for n in notificaciones %}
+    <tr>
+      <td>{{ n.fecha }}</td>
+      <td>{{ n.titulo }}</td>
+      <td>{{ n.mensaje }}</td>
+      <td>{% if n.leida %}Leída{% else %}<strong>No leída</strong>{% endif %}</td>
+      <td>
+        {% if not n.leida %}
+        <a href="{% url 'notificacion_marcar_leida' n.id_notificacion %}" class="btn btn-sm btn-primary">Marcar leída</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No tienes notificaciones.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

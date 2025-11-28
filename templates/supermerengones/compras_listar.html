@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Compras{% endblock title %}
+{% block content %}
+<h2>Compras</h2>
+<a href="{% url 'compra_registrar' %}">Registrar compra</a>
+<table>
+  <thead><tr><th>ID</th><th>Proveedor</th><th>Fecha</th><th>Total</th></tr></thead>
+  <tbody>
+  {% for c in compras %}
+    <tr>
+      <td>{{ c.id_compra|default:c.id }}</td>
+      <td>{{ c.id_proveedor }}</td>
+      <td>{{ c.fecha }}</td>
+      <td>{{ c.total }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="4">Sin compras registradas</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

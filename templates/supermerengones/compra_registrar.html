@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Registrar Compra{% endblock title %}
+{% block content %}
+<h2>Registrar Compra</h2>
+<form method="post">
+  {% csrf_token %}
+  <label>Proveedor</label>
+  <select name="id_proveedor" required>
+    <option value="">-- Seleccione --</option>
+    {% for p in proveedores %}
+      <option value="{{ p.id_proveedor|default:p.id }}">{{ p.nombre }}</option>
+    {% endfor %}
+  </select>
+  <hr/>
+  {% for i in "12345" %}
+    <div>
+      <label>Insumo {{ forloop.counter }}</label>
+      <select name="i{{ forloop.counter }}_id">
+        <option value="">-- Seleccione --</option>
+        {% for ins in insumos %}
+          <option value="{{ ins.id_insumo|default:ins.id }}">{{ ins.nombre }}</option>
+        {% endfor %}
+      </select>
+      <label>Cantidad</label>
+      <input type="number" name="i{{ forloop.counter }}_qty" min="1">
+    </div>
+  {% endfor %}
+  <button type="submit">Registrar</button>
+</form>
+{% endblock %}

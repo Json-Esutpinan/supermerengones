@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Verificar Stock Insumo{% endblock title %}
+{% block content %}
+<h2>Verificar Stock de Insumo en Sede</h2>
+<form method="post">{% csrf_token %}
+    <label>ID Insumo:<br><input name="id_insumo" required></label><br>
+    <label>ID Sede:<br><input name="id_sede" required></label><br>
+    <label>Cantidad requerida:<br><input name="cantidad" required></label><br>
+    <button>Verificar</button>
+</form>
+{% if resultado %}
+    <h3>Resultado</h3>
+    <pre>{{ resultado|safe }}</pre>
+{% endif %}
+{% endblock content %}

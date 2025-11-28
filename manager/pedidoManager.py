@@ -189,11 +189,21 @@ class PedidoManager:
         pass
 
     def crearPedido(self, id_cliente, detalles):
+        """Crea un nuevo pedido para un cliente a partir de detalles.
+        detalles: lista de dicts {'id_producto': int, 'cantidad': int}
+        Returns dict with success, message, data (Pedido)
         """
-        TODO: Implementar en otra HU
-        Crea un nuevo pedido
-        """
-        pass
+        try:
+            if not id_cliente:
+                return {'success': False, 'message': 'Cliente inválido', 'data': None}
+            if not detalles or not isinstance(detalles, list):
+                return {'success': False, 'message': 'Detalles vacíos', 'data': None}
+            pedido = self.dao.crear_pedido(id_cliente, detalles)
+            if not pedido:
+                return {'success': False, 'message': 'No fue posible crear el pedido', 'data': None}
+            return {'success': True, 'message': 'Pedido creado correctamente', 'data': pedido}
+        except Exception as e:
+            return {'success': False, 'message': f'Error al crear pedido: {str(e)}', 'data': None}
 
     def actualizarEstado(self, id_pedido, nuevo_estado, id_empleado=None):
         """

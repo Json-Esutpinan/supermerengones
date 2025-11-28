@@ -30,4 +30,19 @@ class ClienteDAO:
         """
         resp = self.supabase.table("cliente").select("*").eq("id_cliente", id_cliente).limit(1).execute()
         return resp
+    
+    def actualizar(self, id_cliente, telefono=None, direccion=None):
+        """Actualiza campos básicos de un cliente."""
+        update_fields = {}
+        if telefono is not None:
+            update_fields['telefono'] = telefono
+        if direccion is not None:
+            update_fields['direccion'] = direccion
+        if not update_fields:
+            return {'success': False, 'message': 'Nada para actualizar'}
+        resp = self.supabase.table("cliente").update(update_fields).eq("id_cliente", id_cliente).execute()
+        # Normalizar respuesta
+        if resp and getattr(resp, 'data', None):
+            return {'success': True, 'data': resp.data, 'message': 'Cliente actualizado'}
+        return {'success': False, 'message': 'No se pudo actualizar'}
 # Fin del archivo dao/clienteDAO.py con direccion

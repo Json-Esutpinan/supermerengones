@@ -42,6 +42,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'security_headers.SecurityHeadersMiddleware',
+    'notifications_middleware.NotificacionesCountMiddleware',
 ]
 
 ROOT_URLCONF = 'urls'
@@ -58,6 +60,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'notifications_context.notifications_badge',
             ],
         },
     },

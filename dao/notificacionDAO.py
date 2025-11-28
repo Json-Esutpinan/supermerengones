@@ -111,3 +111,46 @@ class NotificacionDAO:
         except Exception as e:
             logger.error(f"Error al listar todas las notificaciones: {str(e)}")
             raise
+
+    # NUEVO: listado filtrado y paginado para panel admin
+    def listar_admin_filtrado(self, sede=None, rol=None, leidas=None, page=1, page_size=25):
+        """Lista notificaciones con filtros opcionales.
+
+        Args:
+            sede (int|None): filtra por sede del cliente (join implícito vía RPC o vista futura).
+            rol (str|None): 'cliente' (otros roles futura extensión).
+            leidas (bool|None): True solo leídas, False solo no leídas.
+            page (int): página 1-based.
+            page_size (int): tamaño página.
+        """
+        try:
+            query = self.supabase.table('notificacion').select('*, cliente(id_cliente, usuario(nombre, email))')
+            if rol == 'cliente':
+                # ya filtramos por tener cliente asociado (todas son cliente actualmente)
+                pass
+            if leidas is True:
+                query = query.eq('leida', True)
+            elif leidas is False:
+                query = query.eq('leida', False)
+            # sede filtrado: requiere que tabla notificacion tenga id_cliente -> cliente -> sede
+            if sede is not None:
+                # Supabase no soporta eq profundo directo en embed, workaround: usar RPC en futuro.
+                # Aquí intentamos filtrar por sede si la columna directa existe en notificacion (extensión futura).
+                try:
+                    query = query.eq('id_sede', sede)
+                except Exception:
+                    pass
+            # Paginación
+            if page < 1:
+                page = 1
+            start = (page - 1) * page_size
+            end = start + page_size - 1
+            query = query.order('fecha', desc=True).range(start, end)
+            resp = query.execute()
+            # Total aproximado (para simple paginación) - segunda consulta ligera
+            total_resp = self.supabase.table('notificacion').select('id_notificacion', count='exact').execute()
+            total = total_resp.count if hasattr(total_resp, 'count') else (len(total_resp.data) if total_resp.data else 0)
+            return {'data': resp.data or [], 'page': page, 'page_size': page_size, 'total': total}
+        except Exception as e:
+            logger.error(f"Error en listar_admin_filtrado: {str(e)}")
+            return {'data': [], 'page': page, 'page_size': page_size, 'total': 0, 'error': str(e)}

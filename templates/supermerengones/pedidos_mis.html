@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Mis Pedidos{% endblock title %}
+{% block content %}
+<h2>Mis Pedidos</h2>
+<table>
+    <thead><tr><th>ID</th><th>Fecha</th><th>Estado</th><th>Total</th><th></th></tr></thead>
+    <tbody>
+    {% for p in pedidos %}
+        <tr>
+            <td>{{ p.id_pedido }}</td>
+            <td>{{ p.fecha }}</td>
+            <td>{{ p.estado }}</td>
+            <td>{{ p.total }}</td>
+            <td><a href="{% url 'pedido_detalle' p.id_pedido %}">Ver</a></td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="5">Sin pedidos</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

@@ -1,0 +1,44 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Promociones (Admin){% endblock %}
+{% block content %}
+<h2>Promociones</h2>
+<p><a href="{% url 'promocion_crear' %}" class="btn btn-primary">Crear Promoción</a></p>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Título</th>
+      <th>Tipo</th>
+      <th>Valor</th>
+      <th>Inicio</th>
+      <th>Fin</th>
+      <th>Activa</th>
+      <th>Productos</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in promos %}
+      <tr>
+        <td>{{ p.id_promocion }}</td>
+        <td>{{ p.titulo }}</td>
+        <td>{{ p.tipo }}</td>
+        <td>{{ p.valor }}</td>
+        <td>{{ p.fecha_inicio }}</td>
+        <td>{{ p.fecha_fin }}</td>
+        <td>{{ p.activo }}</td>
+        <td>{{ p.total_productos }}</td>
+        <td>
+          <a href="{% url 'promocion_editar' p.id_promocion %}" class="btn btn-sm btn-secondary">Editar</a>
+          <form action="{% url 'promocion_toggle_estado' p.id_promocion %}" method="post" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-warning">{{ p.activo|yesno:'Inactivar,Activar' }}</button>
+          </form>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="9">No hay promociones registradas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

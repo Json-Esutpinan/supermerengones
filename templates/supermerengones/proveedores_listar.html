@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Proveedores{% endblock title %}
+{% block content %}
+<h2>Proveedores</h2>
+<a href="{% url 'proveedor_crear' %}">Nuevo proveedor</a>
+<table>
+  <thead><tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Email</th><th></th></tr></thead>
+  <tbody>
+  {% for p in proveedores %}
+    <tr>
+      <td>{{ p.id_proveedor|default:p.id }}</td>
+      <td>{{ p.nombre }}</td>
+      <td>{{ p.telefono }}</td>
+      <td>{{ p.email }}</td>
+      <td><a href="{% url 'proveedor_editar' p.id_proveedor|default:p.id %}">Editar</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">Sin proveedores</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Editar Insumo{% endblock %}
+{% block content %}
+<h2>Editar Insumo</h2>
+<form method="post">{% csrf_token %}
+  <div class="mb-2">
+    <label>Código</label>
+    <input type="text" name="codigo" class="form-control" value="{{ insumo.codigo }}" required>
+  </div>
+  <div class="mb-2">
+    <label>Nombre</label>
+    <input type="text" name="nombre" class="form-control" value="{{ insumo.nombre }}" required>
+  </div>
+  <div class="mb-2">
+    <label>Descripción</label>
+    <textarea name="descripcion" class="form-control" rows="3">{{ insumo.descripcion }}</textarea>
+  </div>
+  <div class="mb-2">
+    <label>ID Unidad</label>
+    <input type="text" name="id_unidad" class="form-control" value="{{ insumo.id_unidad }}">
+  </div>
+  <div class="mb-2">
+    <label>Sede</label>
+    <select name="id_sede" class="form-select" required>
+      {% for s in sedes %}
+        <option value="{{ s.id_sede }}" {% if s.id_sede == insumo.id_sede %}selected{% endif %}>{{ s.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-2">
+    <label>Stock mínimo</label>
+    <input type="number" name="stock_minimo" class="form-control" value="{{ insumo.stock_minimo }}" required>
+  </div>
+  <button class="btn btn-primary" type="submit">Guardar</button>
+  <a href="{% url 'insumos_admin_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

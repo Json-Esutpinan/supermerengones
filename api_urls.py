@@ -40,6 +40,12 @@ from views.viewsProducto import (
     actualizar_stock_producto,
     verificar_disponibilidad_producto
 )
+from views.views import (
+    api_productos_activos,
+    api_pedidos_cliente,
+    api_pedido_crear_token,
+    api_pedido_detalle,
+)
 from views.viewsReclamo import (
     listar_reclamos_cliente,
     listar_reclamos_pedido,
@@ -54,12 +60,14 @@ from views.viewsReclamo import (
     obtener_estadisticas_reclamos
 )
 from views.viewsAuth import (
-    login_view,
-    registrar_cliente_view,
     registrar_empleado_view,
     registrar_administrador_view,
     usuario_actual_view,
-    cerrar_sesion_view
+)
+from views.views import (
+    api_auth_login_entry,
+    api_auth_register_entry,
+    api_auth_logout_entry,
 )
 from views.viewsPersonal import (
     listar_empleados,
@@ -184,6 +192,7 @@ urlpatterns = [
     path('reclamos/estadisticas/', obtener_estadisticas_reclamos, name='obtener_estadisticas_reclamos'),
 
     # Rutas para productos
+    path('productos/activos/', api_productos_activos, name='api_productos_activos'),
     path('productos/', listar_productos, name='listar_productos'),
     path('productos/crear/', crear_producto, name='crear_producto'),
     path('productos/<int:id_producto>/', obtener_producto, name='obtener_producto'),
@@ -227,13 +236,13 @@ urlpatterns = [
     path('compras/insumo/<int:id_insumo>/historial/', obtener_historial_insumo, name='obtener_historial_insumo'),
     path('compras/estado/', listar_compras_por_estado, name='listar_compras_por_estado'),
 
-    #Rutas para autenticación
-    path("auth/login/", login_view, name="login"),
-    path("auth/registrar-cliente/", registrar_cliente_view, name="registrar_cliente"),
+    # Rutas para autenticación (API): wrappers to redirect browser to HTML views
+    path("auth/login/", api_auth_login_entry, name="api_login"),
+    path("auth/registrar-cliente/", api_auth_register_entry, name="api_registrar_cliente"),
     path("auth/registrar-empleado/", registrar_empleado_view, name="registrar_empleado"),
     path("auth/registrar-administrador/", registrar_administrador_view, name="registrar_administrador"),
     path("auth/usuario/", usuario_actual_view, name="usuario_actual"),
-    path("auth/logout/", cerrar_sesion_view, name="cerrar_sesion"),
+    path("auth/logout/", api_auth_logout_entry, name="api_cerrar_sesion"),
 
     # Rutas para empleados (gestión de personal)
     path('empleados/', listar_empleados, name='listar_empleados'),
@@ -278,4 +287,9 @@ urlpatterns = [
     path('asistencia/<int:id_asistencia>/modificar/', modificar_asistencia, name='modificar_asistencia'),
     path('asistencia/<int:id_asistencia>/estado/', actualizar_estado, name='actualizar_estado_asistencia'),
     path('asistencia/<int:id_asistencia>/eliminar/', eliminar_asistencia, name='eliminar_asistencia'),
+
+    # API básica adicional
+    path('cliente/pedidos/', api_pedidos_cliente, name='api_pedidos_cliente'),
+    path('pedidos/crear-token/', api_pedido_crear_token, name='api_pedido_crear_token'),
+    path('pedidos/<int:id_pedido>/detalle/', api_pedido_detalle, name='api_pedido_detalle'),
 ]

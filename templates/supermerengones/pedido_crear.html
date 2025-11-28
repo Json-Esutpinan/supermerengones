@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Crear Pedido</h2>
+<form id="pedido-form" method="post">
+  {% csrf_token %}
+  <div style="display:none">
+    <label for="id_sede">Sede:</label>
+    <input type="number" name="id_sede" id="id_sede">
+  </div>
+  <p style="font-size:0.9rem;color:#666;">La sede se asigna automáticamente por ahora.</p>
+  <hr/>
+  <div id="items-container">
+    {% if prefilled_items %}
+      {% for it in prefilled_items %}
+      <div class="item-row">
+        <label>Producto {{ forloop.counter }}:</label>
+        <select name="p{{ forloop.counter }}_id" class="producto-select">
+          <option value="">-- Seleccione --</option>
+          {% for p in productos %}
+            <option value="{{ p.id }}" data-precio="{{ p.price }}" {% if p.id == it.id %}selected{% endif %}>{{ p.name }} ({{ p.price }})</option>
+          {% endfor %}
+        </select>
+        <label>Cantidad:</label>
+        <input type="number" min="1" name="p{{ forloop.counter }}_qty" class="cantidad-input" value="{{ it.qty }}">
+        <button type="button" class="remove-btn" style="display:none">X</button>
+      </div>
+      {% endfor %}
+      {% for i in "123"|slice:":{{ 3-prefilled_items|length }}" %}
+      <div class="item-row">
+        <label>Producto {{ prefilled_items|length|add:forloop.counter }}:</label>
+        <select name="p{{ prefilled_items|length|add:forloop.counter }}_id" class="producto-select">
+          <option value="">-- Seleccione --</option>
+          {% for p in productos %}
+            <option value="{{ p.id }}" data-precio="{{ p.price }}">{{ p.name }} ({{ p.price }})</option>
+          {% endfor %}
+        </select>
+        <label>Cantidad:</label>
+        <input type="number" min="1" name="p{{ prefilled_items|length|add:forloop.counter }}_qty" class="cantidad-input">
+        <button type="button" class="remove-btn" style="display:none">X</button>
+      </div>
+      {% endfor %}
+    {% else %}
+      {% for i in "123" %}
+      <div class="item-row">
+        <label>Producto {{ forloop.counter }}:</label>
+        <select name="p{{ forloop.counter }}_id" class="producto-select">
+          <option value="">-- Seleccione --</option>
+          {% for p in productos %}
+            <option value="{{ p.id }}" data-precio="{{ p.price }}">{{ p.name }} ({{ p.price }})</option>
+          {% endfor %}
+        </select>
+        <label>Cantidad:</label>
+        <input type="number" min="1" name="p{{ forloop.counter }}_qty" class="cantidad-input">
+        <button type="button" class="remove-btn" style="display:none">X</button>
+      </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+  <button type="button" id="add-item-btn">Agregar Producto</button>
+  <div style="margin-top:1rem; font-weight:bold;">Total estimado: $<span id="total-estimado">0</span></div>
+  <button type="submit">Crear Pedido</button>
+</form>
+
+<template id="item-row-template">
+  <div class="item-row">
+    <label>Producto __N__:</label>
+    <select name="__PID___id" class="producto-select">
+      <option value="">-- Seleccione --</option>
+      {% for p in productos %}
+        <option value="{{ p.id }}" data-precio="{{ p.price }}">{{ p.name }} ({{ p.price }})</option>
+      {% endfor %}
+    </select>
+    <label>Cantidad:</label>
+    <input type="number" min="1" name="__PID___qty" class="cantidad-input">
+    <button type="button" class="remove-btn">X</button>
+  </div>
+</template>
+
+<script>
+(function(){
+  const container = document.getElementById('items-container');
+  const addBtn = document.getElementById('add-item-btn');
+  const totalSpan = document.getElementById('total-estimado');
+  const form = document.getElementById('pedido-form');
+  const MAX_ITEMS = 10;
+
+  function renumerar(){
+    const rows = container.querySelectorAll('.item-row');
+    rows.forEach((row, idx) => {
+      const num = idx + 1;
+      row.querySelector('label').textContent = 'Producto ' + num + ':';
+      const sel = row.querySelector('.producto-select');
+      const qty = row.querySelector('.cantidad-input');
+      sel.name = 'p' + num + '_id';
+      qty.name = 'p' + num + '_qty';
+      const removeBtn = row.querySelector('.remove-btn');
+      removeBtn.style.display = rows.length > 1 ? 'inline-block' : 'none';
+    });
+  }
+
+  function calcularTotal(){
+    let total = 0;
+    container.querySelectorAll('.item-row').forEach(row => {
+      const sel = row.querySelector('.producto-select');
+      const qtyInput = row.querySelector('.cantidad-input');
+      const precio = parseFloat(sel.options[sel.selectedIndex]?.getAttribute('data-precio') || '0');
+      const qty = parseInt(qtyInput.value || '0', 10);
+      if(precio > 0 && qty > 0) total += precio * qty;
+    });
+    totalSpan.textContent = total.toFixed(2);
+  }
+
+  function addRow(){
+    const current = container.querySelectorAll('.item-row').length;
+    if(current >= MAX_ITEMS){
+      alert('Máximo ' + MAX_ITEMS + ' productos.');
+      return;
+    }
+    const tpl = document.getElementById('item-row-template').content.cloneNode(true);
+    container.appendChild(tpl);
+    renumerar();
+  }
+
+  container.addEventListener('input', function(e){
+    if(e.target.classList.contains('producto-select') || e.target.classList.contains('cantidad-input')){
+      calcularTotal();
+    }
+  });
+
+  container.addEventListener('click', function(e){
+    if(e.target.classList.contains('remove-btn')){
+      e.target.closest('.item-row').remove();
+      renumerar();
+      calcularTotal();
+    }
+  });
+
+  addBtn.addEventListener('click', function(){
+    addRow();
+  });
+
+  form.addEventListener('submit', function(e){
+    const rows = container.querySelectorAll('.item-row');
+    let valid = true;
+    rows.forEach(r => {
+      const sel = r.querySelector('.producto-select');
+      const qty = r.querySelector('.cantidad-input');
+      if(sel.value && (!qty.value || parseInt(qty.value,10) <= 0)){
+        valid = false;
+      }
+    });
+    if(!valid){
+      e.preventDefault();
+      alert('Verifique cantidades (>0) para productos seleccionados.');
+    }
+  });
+
+  renumerar();
+  calcularTotal();
+})();
+</script>
+{% endblock %}

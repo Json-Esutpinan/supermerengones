@@ -1,0 +1,48 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Notificaciones (Admin){% endblock %}
+{% block content %}
+<h2>Notificaciones (Admin)</h2>
+<div class="mb-3 d-flex" style="gap:8px;flex-wrap:wrap;align-items:center;">
+  <a href="{% url 'notificacion_admin_crear' %}" class="btn btn-sm btn-success">Nueva Masiva</a>
+  <form method="get" class="d-flex" style="gap:6px;flex-wrap:wrap;align-items:center;">
+    <select name="leidas" class="form-select form-select-sm" style="width:140px;">
+      <option value="" {% if not f_leidas %}selected{% endif %}>Todas</option>
+      <option value="no" {% if f_leidas == 'no' %}selected{% endif %}>No leídas</option>
+      <option value="si" {% if f_leidas == 'si' %}selected{% endif %}>Leídas</option>
+    </select>
+    <input type="number" name="sede" class="form-control form-control-sm" placeholder="ID Sede" value="{% if f_sede %}{{ f_sede }}{% endif %}" style="width:90px;" />
+    <select name="rol" class="form-select form-select-sm" style="width:110px;">
+      <option value="" {% if not f_rol %}selected{% endif %}>Rol: Todos</option>
+      <option value="cliente" {% if f_rol == 'cliente' %}selected{% endif %}>Cliente</option>
+    </select>
+    <button class="btn btn-sm btn-primary" type="submit">Filtrar</button>
+  </form>
+</div>
+<table class="table table-striped table-sm">
+  <thead>
+    <tr><th>Fecha</th><th>Cliente</th><th>Título</th><th>Mensaje</th><th>Leída</th></tr>
+  </thead>
+  <tbody>
+    {% for n in notificaciones %}
+    <tr>
+      <td>{{ n.fecha }}</td>
+      <td>{% if n.cliente %}{{ n.cliente.id_cliente }} - {{ n.cliente.usuario.email }}{% endif %}</td>
+      <td>{{ n.titulo }}</td>
+      <td style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="{{ n.mensaje }}">{{ n.mensaje }}</td>
+      <td>{% if n.leida %}Sí{% else %}No{% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Sin notificaciones.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="d-flex" style="gap:4px;align-items:center;">
+  {% if page > 1 %}
+    <a class="btn btn-sm btn-secondary" href="?page={{ page|add:-1 }}{% if f_leidas %}&leidas={{ f_leidas }}{% endif %}{% if f_sede %}&sede={{ f_sede }}{% endif %}{% if f_rol %}&rol={{ f_rol }}{% endif %}">Anterior</a>
+  {% endif %}
+  <span>Página {{ page }} / {{ last_page }}</span>
+  {% if page < last_page %}
+    <a class="btn btn-sm btn-secondary" href="?page={{ page|add:1 }}{% if f_leidas %}&leidas={{ f_leidas }}{% endif %}{% if f_sede %}&sede={{ f_sede }}{% endif %}{% if f_rol %}&rol={{ f_rol }}{% endif %}">Siguiente</a>
+  {% endif %}
+</div>
+{% endblock %}

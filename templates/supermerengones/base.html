@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}Super Merengones{% endblock title %}</title>
+	<link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+	<header class="main-header">
+			<div class="logo-container brand-row">
+				<img src="{% static 'images/logo.svg' %}" alt="Super Merengones" class="site-logo">
+				<h1>Super Merengones</h1>
+			</div>
+		<button class="nav-toggle" aria-label="Abrir menú" onclick="document.querySelector('.main-header').classList.toggle('nav-open')">☰</button>
+		<nav class="main-nav">
+			<a href="{% url 'index' %}" class="nav-item">Inicio</a>
+			<a href="{% url 'productos' %}" class="nav-item">Productos</a>
+			<a href="{% url 'promociones' %}" class="nav-item">Promociones</a>
+			<a href="{% url 'sedes' %}" class="nav-item">Nuestras Sedes</a>
+			<a href="{% url 'carrito' %}" class="nav-item">Carrito</a>
+			{% if request.user.is_authenticated and request.session.user_rol == 'cliente' %}
+				<a href="{% url 'notificaciones_cliente' %}" class="nav-item">Notificaciones{% if notif_unread and notif_unread > 0 %} <span class="badge" style="background:#dc3545;color:#fff;border-radius:12px;padding:2px 8px;">{{ notif_unread }}</span>{% endif %}</a>
+			{% endif %}
+			{% if request.user.is_authenticated %}
+				<a href="{% url 'reclamos_mis' %}" class="nav-item">Mis Reclamos</a>
+				<a href="{% url 'pedidos_mis' %}" class="nav-item">Mis Pedidos</a>
+				{% if request.session.user_rol == 'empleado' %}
+					<a href="{% url 'turnos_mis' %}" class="nav-item">Mis Turnos</a>
+				{% endif %}
+				{% if request.session.user_rol == 'cliente' %}
+					<a href="{% url 'perfil_usuario' %}" class="nav-item">Mi Perfil</a>
+					<a href="{% url 'perfil_editar' %}" class="nav-item">Editar Perfil</a>
+				{% endif %}
+				{% if request.session.user_rol == 'empleado' or request.session.user_rol == 'administrador' %}
+					<a href="{% url 'pedidos_todos' %}" class="nav-item">Pedidos</a>
+					<a href="{% url 'producto_disponibilidad' %}" class="nav-item">Disp. Producto</a>
+					<a href="{% url 'inventario_verificar' %}" class="nav-item">Stock Insumo</a>
+					<a href="{% url 'productos_admin_list' %}" class="nav-item">Productos Admin</a>
+					<a href="{% url 'insumos_admin_list' %}" class="nav-item">Insumos Admin</a>
+				{% endif %}
+				{% if request.session.user_rol == 'administrador' %}
+					<a href="{% url 'turnos_admin_list' %}" class="nav-item">Turnos Admin</a>
+					<a href="{% url 'promociones_admin_list' %}" class="nav-item">Promociones Admin</a>
+					<a href="{% url 'reclamos_todos' %}" class="nav-item">Reclamos</a>
+					<a href="{% url 'notificaciones_admin' %}" class="nav-item">Notif. Admin</a>
+					<a href="{% url 'proveedor_estadisticas' %}" class="nav-item">Stats Proveedor</a>
+					<a href="{% url 'sedes_admin_list' %}" class="nav-item">Sedes Admin</a>
+					<a href="{% url 'admin_panel' %}" class="nav-item">Administración</a>
+					<a href="{% url 'compras_listar' %}" class="nav-item">Compras</a>
+					<a href="{% url 'admin_funcionalidades' %}" class="nav-item">Funcionalidades</a>
+					<a href="{% url 'registrar_empleado_ui' %}" class="nav-item">Nuevo Empleado</a>
+					<a href="{% url 'registrar_administrador_ui' %}" class="nav-item">Nuevo Admin</a>
+				{% endif %}
+			{% endif %}
+			<div class="auth-links">
+				{% if request.user.is_authenticated %}
+					<a href="{% url 'dashboard' %}" class="nav-item">Mi Panel</a>
+					<span style="padding:6px 10px;">Hola, {{ request.user.first_name|default:request.user.username }}</span>
+					<a href="{% url 'logout' %}" class="nav-item button-secondary">Cerrar sesión</a>
+				{% else %}
+					<a href="{% url 'login' %}" class="nav-item button-secondary">Iniciar Sesión</a>
+					<a href="{% url 'register' %}" class="nav-item button-primary">Registrarse</a>
+				{% endif %}
+			</div>
+		</nav>
+	</header>
+	{% if messages %}
+	<div style="max-width:1100px;margin:16px auto;padding:0 20px;">
+		{% for message in messages %}
+			<div style="padding:10px;border-radius:6px;margin-bottom:8px; background:#fff3cd; border:1px solid #ffeeba;">{{ message }}</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+
+	<main class="content-area">
+		{% block content %}{% endblock content %}
+	</main>
+
+	<footer class="main-footer">
+		<p>&copy; 2025 Super Merengones. Todos los derechos reservados.</p>
+	</footer>
+
+	{% block extra_js %}{% endblock extra_js %}
+</body>
+</html>

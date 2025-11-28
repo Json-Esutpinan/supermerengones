@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Mi Asistencia{% endblock %}
+{% block content %}
+<h2>Mi Asistencia de Hoy</h2>
+{% if registro %}
+  <p><strong>Estado:</strong> {{ registro.estado }}</p>
+  <p><strong>Entrada:</strong> {{ registro.hora_entrada|default:'—' }}</p>
+  <p><strong>Salida:</strong> {{ registro.hora_salida|default:'—' }}</p>
+  {% if not registro.hora_entrada %}
+    <form method="post" action="{% url 'asistencia_registrar_entrada' %}">
+      {% csrf_token %}
+      <button class="btn btn-primary">Registrar Entrada</button>
+    </form>
+  {% elif not registro.hora_salida %}
+    <form method="post" action="{% url 'asistencia_registrar_salida' %}">
+      {% csrf_token %}
+      <button class="btn btn-secondary">Registrar Salida</button>
+    </form>
+  {% endif %}
+{% else %}
+  <p>No hay registro de asistencia para hoy.</p>
+  <form method="post" action="{% url 'asistencia_registrar_entrada' %}">
+    {% csrf_token %}
+    <button class="btn btn-primary">Registrar Entrada</button>
+  </form>
+{% endif %}
+{% endblock %}

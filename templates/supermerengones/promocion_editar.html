@@ -1,0 +1,46 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Editar Promoción{% endblock %}
+{% block content %}
+<h2>Editar Promoción</h2>
+<form method="post">
+  {% csrf_token %}
+  <div>
+    <label>Título</label>
+    <input type="text" name="titulo" value="{{ promo.titulo }}" required maxlength="100" />
+  </div>
+  <div>
+    <label>Descripción</label>
+    <textarea name="descripcion" maxlength="500">{{ promo.descripcion }}</textarea>
+  </div>
+  <div>
+    <label>Tipo</label>
+    <select name="tipo" required>
+      <option value="descuento_porcentaje" {% if promo.tipo == 'descuento_porcentaje' %}selected{% endif %}>Descuento %</option>
+      <option value="descuento_monto" {% if promo.tipo == 'descuento_monto' %}selected{% endif %}>Descuento Monto</option>
+    </select>
+  </div>
+  <div>
+    <label>Valor</label>
+    <input type="number" step="0.01" min="0.01" name="valor" value="{{ promo.valor }}" required />
+  </div>
+  <div>
+    <label>Fecha Inicio</label>
+    <input type="date" name="fecha_inicio" value="{{ promo.fecha_inicio }}" required />
+  </div>
+  <div>
+    <label>Fecha Fin</label>
+    <input type="date" name="fecha_fin" value="{{ promo.fecha_fin }}" required />
+  </div>
+  <div>
+    <label>Productos asociados</label>
+    <select name="productos" multiple size="8">
+      {% for pr in productos %}
+        <option value="{{ pr.id_producto }}" {% if pr.id_producto in productos_sel %}selected{% endif %}>{{ pr.nombre }}</option>
+      {% endfor %}
+    </select>
+    <p style="font-size:0.85em;color:#555">Mantén Ctrl (Windows) o Cmd (Mac) para seleccionar múltiples.</p>
+  </div>
+  <button type="submit" class="btn btn-primary">Actualizar</button>
+  <a href="{% url 'promociones_admin_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Disponibilidad Producto{% endblock title %}
+{% block content %}
+<h2>Verificar Disponibilidad de Producto</h2>
+<form method="post">{% csrf_token %}
+    <label>ID Producto:<br><input name="id_producto" required></label><br>
+    <label>Cantidad:<br><input name="cantidad" required></label><br>
+    <button>Verificar</button>
+</form>
+{% if resultado %}
+    <h3>Resultado</h3>
+    <pre>{{ resultado|safe }}</pre>
+{% endif %}
+{% endblock content %}

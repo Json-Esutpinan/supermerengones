@@ -4,6 +4,9 @@
 from config import get_supabase_client, TABLA_PEDIDO, TABLA_DETALLE_PEDIDO
 from entidades.pedido import Pedido
 from entidades.detallePedido import DetallePedido
+from dao.productoDAO import ProductoDAO
+from dao.sedeDAO import SedeDAO
+from datetime import datetime
 
 
 class PedidoDAO:
@@ -181,6 +184,67 @@ class PedidoDAO:
         except Exception as e:
             print(f"Error al listar todos los pedidos: {e}")
             return []
+
+    def crear_pedido(self, id_cliente, detalles):
+        """
+        Crea un pedido y sus detalles calculando totales a partir del precio del producto.
+        Args:
+            id_cliente: ID del cliente
+            detalles: lista de dicts {'id_producto': int, 'cantidad': int}
+        Returns:
+            Objeto Pedido creado o None si hay error
+        """
+        try:
+            producto_dao = ProductoDAO()
+            total = 0.0
+            detalles_rows = []
+            # Calcular totales y preparar filas de detalle
+            for item in detalles:
+                id_producto = int(item.get('id_producto'))
+                cantidad = int(item.get('cantidad', 0))
+                if cantidad <= 0:
+                    continue
+                prod = producto_dao.obtener_por_id(id_producto)
+                precio = float(prod.precio) if prod else 0.0
+                subtotal = precio * cantidad
+                total += subtotal
+                detalles_rows.append({
+                    'id_producto': id_producto,
+                    'cantidad': cantidad,
+                    'precio_unitario': precio,
+                    'subtotal': subtotal
+                })
+            if not detalles_rows:
+                return None
+            # Insertar pedido
+            # Seleccionar sede por defecto (primera activa)
+            id_sede = None
+            try:
+                sedes_resp = SedeDAO().listar(solo_activos=True)
+                if getattr(sedes_resp, 'data', None):
+                    id_sede = sedes_resp.data[0].get('id_sede')
+            except Exception:
+                id_sede = None
+            pedido_data = {
+                'id_cliente': id_cliente,
+                'id_sede': id_sede,
+                'estado': 'pendiente',
+                'total': total,
+                'fecha': datetime.now().isoformat()
+            }
+            pedido_resp = self.supabase.table(self.tabla_pedido).insert(pedido_data).execute()
+            if not pedido_resp.data:
+                return None
+            pedido_id = pedido_resp.data[0].get('id_pedido')
+            # Insertar detalles con id_pedido
+            for row in detalles_rows:
+                row['id_pedido'] = pedido_id
+            _ = self.supabase.table(self.tabla_detalle).insert(detalles_rows).execute()
+            # Retornar pedido completo
+            return self.obtener_por_id(pedido_id)
+        except Exception as e:
+            print(f"Error al crear pedido: {e}")
+            return None
     
     def actualizar_estado(self, id_pedido, nuevo_estado):
         """

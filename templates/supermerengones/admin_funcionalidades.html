@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Panel Funcionalidades{% endblock %}
+{% block content %}
+<h2>Panel de Funcionalidades</h2>
+<p>Resumen del estado de implementación. Estados: <span style="color:#157347">Implementado</span>, <span style="color:#d39e00">En progreso</span>, <span style="color:#dc3545">Pendiente</span>.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+  {% for f in funcionalidades %}
+  <div style="border:1px solid #ddd;border-radius:8px;padding:12px;background:#fff;display:flex;flex-direction:column;">
+    <h3 style="margin:0 0 8px;">{{ f.nombre }}</h3>
+    <div style="margin-bottom:8px;font-size:0.9em;">{{ f.descripcion }}</div>
+    {% if f.estado == 'Implementado' %}
+      <div style="color:#157347;font-weight:600;">{{ f.estado }}</div>
+    {% elif f.estado == 'En progreso' %}
+      <div style="color:#d39e00;font-weight:600;">{{ f.estado }}</div>
+    {% else %}
+      <div style="color:#dc3545;font-weight:600;">{{ f.estado }}</div>
+    {% endif %}
+    <div style="margin-top:auto;">
+      {% if f.url %}
+        {% if f.clave == 'recetas' %}
+          <!-- Requiere id_producto, usar ejemplo 1 -->
+          <a href="{% url f.url 1 %}" class="btn btn-sm btn-primary">Ir</a>
+        {% else %}
+          <a href="{% url f.url %}" class="btn btn-sm btn-primary">Ir</a>
+        {% endif %}
+      {% else %}
+        <button disabled class="btn btn-sm" style="background:#eee;color:#666;">Sin vista</button>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Productos (Admin){% endblock %}
+{% block content %}
+<h2>Productos</h2>
+<a href="{% url 'producto_crear' %}" class="btn btn-primary">Nuevo Producto</a>
+<table class="table table-striped mt-3">
+  <thead>
+    <tr>
+      <th>ID</th><th>Código</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Activo</th><th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in productos %}
+    <tr>
+      <td>{{ p.id_producto }}</td>
+      <td>{{ p.codigo }}</td>
+      <td>{{ p.nombre }}</td>
+      <td>{{ p.precio }}</td>
+      <td>{{ p.stock }}</td>
+      <td>{% if p.activo %}Sí{% else %}No{% endif %}</td>
+      <td>
+        <a href="{% url 'producto_editar' p.id_producto %}" class="btn btn-sm btn-secondary">Editar</a>
+        <a href="{% url 'producto_toggle_estado' p.id_producto %}" class="btn btn-sm btn-warning">{% if p.activo %}Inactivar{% else %}Activar{% endif %}</a>
+        <a href="{% url 'producto_receta_editar' p.id_producto %}" class="btn btn-sm btn-info">Receta</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7">Sin productos</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
