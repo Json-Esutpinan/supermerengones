@@ -16,6 +16,7 @@ class SedeDAO:
             "telefono": sede.telefono,
             "activo": sede.activo
         }
+        # id_sede se autogenera en la BD
         resp = self.supabase.table(self.tabla).insert(data).execute()
         return resp
 
@@ -28,8 +29,16 @@ class SedeDAO:
             query = query.eq("activo", True)
         return query.execute()
 
+    def obtener_por_nombre(self, nombre: str):
+        """Obtiene sedes que coinciden exactamente por nombre (case-insensitive en BD según colación)."""
+        return self.supabase.table(self.tabla).select("*").eq("nombre", nombre).execute()
+
     def modificar(self, id_sede: int, cambios: dict):
         return self.supabase.table(self.tabla).update(cambios).eq("id_sede", id_sede).execute()
 
     def desactivar(self, id_sede: int):
         return self.supabase.table(self.tabla).update({"activo": False}).eq("id_sede", id_sede).execute()
+    
+    def cambiar_estado(self, id_sede: int, activo: bool):
+        """Cambia el estado activo/inactivo de una sede"""
+        return self.supabase.table(self.tabla).update({"activo": activo}).eq("id_sede", id_sede).execute()

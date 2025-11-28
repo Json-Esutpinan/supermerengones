@@ -4,12 +4,10 @@
 from config import get_supabase_client, TABLA_RECLAMO
 from entidades.reclamo import Reclamo
 
-
 class ReclamoDAO:
     """
     Data Access Object para la gestión de reclamos
     """
-    
     def __init__(self):
         """Constructor que inicializa la conexión a Supabase"""
         self.supabase = get_supabase_client()
@@ -216,3 +214,34 @@ class ReclamoDAO:
         except Exception as e:
             print(f"Error al cambiar estado del reclamo: {e}")
             return None
+
+    # Métodos alias para compatibilidad con pruebas existentes
+    def crear(self, reclamo: Reclamo):
+        """
+        Alias de crear que acepta una entidad Reclamo y delega en insertar.
+        """
+        try:
+            data = reclamo.to_dict() if hasattr(reclamo, 'to_dict') else reclamo
+            # Asegurar autogeneración del id
+            if data.get('id_reclamo') is None:
+                data.pop('id_reclamo', None)
+            return self.supabase.table(self.tabla).insert(data).execute()
+        except Exception as e:
+            print(f"Error al crear reclamo: {e}")
+            raise
+
+    def actualizar_estado(self, id_reclamo, nuevo_estado, respuesta=None):
+        """
+        Alias que actualiza estado y opcionalmente la respuesta del reclamo.
+        Retorna la respuesta cruda de Supabase para compatibilidad con tests.
+        """
+        try:
+            # En el esquema actual no existe columna 'respuesta'; ignoramos ese parámetro
+            datos = {'estado': nuevo_estado}
+            return self.supabase.table(self.tabla)\
+                .update(datos)\
+                .eq('id_reclamo', id_reclamo)\
+                .execute()
+        except Exception as e:
+            print(f"Error al actualizar estado del reclamo: {e}")
+            raise

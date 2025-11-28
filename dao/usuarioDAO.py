@@ -11,7 +11,10 @@ class UsuarioDAO:
         return resp
 
     def crear(self, usuario: Usuario):
-        data = usuario.to_dict()
+        data = usuario.to_dict(incluir_password=True)  # Incluir password al crear
+        # Eliminar id_usuario si es None para permitir autogeneración en BD
+        if data.get('id_usuario') is None:
+            data.pop('id_usuario', None)
         resp = self.supabase.table("usuario").insert(data).execute()
         return resp
 

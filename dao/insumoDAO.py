@@ -15,17 +15,27 @@ class InsumoDAO:
         self.supabase = get_supabase_client()
         self.tabla = TABLA_INSUMO
     
-    def insertar(self, insumo_data):
+    def insertar(self, insumo):
         """
         Inserta un nuevo insumo
         
         Args:
-            insumo_data: dict con los datos del insumo (debe incluir id_sede)
+            insumo: Objeto Insumo o dict con los datos del insumo
             
         Returns:
             Objeto Insumo creado o None si falla
         """
         try:
+            # Convertir a dict si es un objeto Insumo
+            if hasattr(insumo, 'to_dict'):
+                insumo_data = insumo.to_dict()
+            else:
+                insumo_data = insumo
+            
+            # Eliminar id_insumo si es None para permitir autogeneración
+            if insumo_data.get('id_insumo') is None:
+                insumo_data.pop('id_insumo', None)
+            
             response = self.supabase.table(self.tabla)\
                 .insert(insumo_data)\
                 .execute()

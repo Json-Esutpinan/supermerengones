@@ -228,7 +228,7 @@ class ReclamoManager:
             dict con 'success', 'message' y 'data'
         """
         try:
-            estados_validos = ['abierto', 'en_revision', 'resuelto', 'cerrado']
+            estados_validos = ['abierto', 'en_revision', 'resuelto', 'cerrado', 'rechazado']
             if nuevo_estado not in estados_validos:
                 return {
                     'success': False,
@@ -247,7 +247,7 @@ class ReclamoManager:
             
             # Si se está resolviendo o cerrando, agregar fecha de resolución
             fecha_resolucion = None
-            if nuevo_estado in ['resuelto', 'cerrado'] and not reclamo.fecha_resolucion:
+            if nuevo_estado in ['resuelto', 'cerrado', 'rechazado'] and not reclamo.fecha_resolucion:
                 fecha_resolucion = datetime.now().isoformat()
             
             reclamo_actualizado = self.dao.cambiar_estado(id_reclamo, nuevo_estado, fecha_resolucion)
@@ -308,7 +308,6 @@ class ReclamoManager:
                 'descripcion': nueva_descripcion,
                 'estado': 'en_revision'  # Cambiar estado a en_revision
             }
-            
             reclamo_actualizado = self.dao.actualizar(id_reclamo, datos)
             
             if reclamo_actualizado:
@@ -329,4 +328,91 @@ class ReclamoManager:
                 'success': False,
                 'message': f'Error al agregar respuesta: {str(e)}',
                 'data': None
+            }
+
+    def resolver_reclamo(self, id_reclamo, respuesta=None):
+        """
+        Agrega una respuesta opcional y marca el reclamo como 'resuelto'.
+        Retorna dict con 'success', 'message' y 'data' (Reclamo actualizado).
+        """
+        try:
+            # Verificar que el reclamo existe
+            reclamo = self.dao.obtener_por_id(id_reclamo)
+            if not reclamo:
+                return {
+                    'success': False,
+                    'message': 'Reclamo no encontrado',
+                    'data': None
+                }
+
+            # Agregar respuesta si se proporciona
+            if respuesta and len(respuesta.strip()) >= 10:
+                desc = f"{reclamo.descripcion}\n\n--- RESPUESTA ---\n{respuesta.strip()}"
+                reclamo = self.dao.actualizar(id_reclamo, {'descripcion': desc}) or reclamo
+
+            # Cambiar estado a resuelto
+            resultado = self.cambiarEstadoReclamo(id_reclamo, 'resuelto')
+            return resultado
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'Error al resolver reclamo: {str(e)}',
+                'data': None
+            }
+
+    def rechazar_reclamo(self, id_reclamo, razon=None):
+        """
+        Agrega una razón opcional y marca el reclamo como 'rechazado'.
+        Retorna dict con 'success', 'message' y 'data' (Reclamo actualizado).
+        """
+        try:
+            # Verificar que el reclamo existe
+            reclamo = self.dao.obtener_por_id(id_reclamo)
+            if not reclamo:
+                return {
+                    'success': False,
+                    'message': 'Reclamo no encontrado',
+                    'data': None
+                }
+
+            # Agregar razón si se proporciona
+            if razon and len(razon.strip()) >= 10:
+                desc = f"{reclamo.descripcion}\n\n--- RESOLUCIÓN ---\n{razon.strip()}"
+                reclamo = self.dao.actualizar(id_reclamo, {'descripcion': desc}) or reclamo
+
+            # Cambiar estado a rechazado
+            resultado = self.cambiarEstadoReclamo(id_reclamo, 'rechazado')
+            return resultado
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'Error al rechazar reclamo: {str(e)}',
+                'data': None
+            }
+
+    def obtener_estadisticas(self):
+        """
+        Obtiene estadísticas agregadas de reclamos: total, por estado y por tipo (si existiera).
+        """
+        try:
+            reclamos = self.dao.listar_todos(limite=1000)
+            total = len(reclamos)
+            por_estado = {}
+            for r in reclamos:
+                por_estado[r.estado] = por_estado.get(r.estado, 0) + 1
+
+            # No existe campo tipo en la entidad; devolver estructura vacía por compatibilidad
+            por_tipo = {}
+
+            return {
+                'total': total,
+                'por_estado': por_estado,
+                'por_tipo': por_tipo
+            }
+        except Exception as e:
+            return {
+                'total': 0,
+                'por_estado': {},
+                'por_tipo': {},
+                'error': str(e)
             }

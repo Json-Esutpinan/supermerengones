@@ -250,3 +250,89 @@ def actualizar_estado_pedido(request, id_pedido):
             'message': f'Error al procesar la solicitud: {str(e)}',
             'data': None
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def procesar_pago(request, id_pedido):
+    """
+    Procesa el pago de un pedido (HU15 - Pago en Línea)
+    
+    POST /api/pedidos/{id_pedido}/pago/
+    
+    Body JSON:
+    {
+        "metodo_pago": "tarjeta",           // efectivo, tarjeta, transferencia, yape, plin
+        "transaccion_id": "TXN123456"       // (opcional) ID de transacción del procesador
+    }
+    """
+    try:
+        metodo_pago = request.data.get('metodo_pago')
+        transaccion_id = request.data.get('transaccion_id')
+        
+        if not metodo_pago:
+            return Response({
+                'success': False,
+                'message': 'El campo "metodo_pago" es requerido'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        resultado = pedido_manager.procesarPago(id_pedido, metodo_pago, transaccion_id)
+        
+        if resultado['success']:
+            return Response({
+                'success': True,
+                'message': resultado['message'],
+                'data': resultado['data'].to_dict() if resultado['data'] else None
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'success': False,
+                'message': resultado['message'],
+                'data': None
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': f'Error al procesar pago: {str(e)}',
+            'data': None
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def obtener_estado_pago(request, id_pedido):
+    """
+    Obtiene el estado del pago de un pedido (HU15)
+    
+    GET /api/pedidos/{id_pedido}/estado-pago/
+    """
+    try:
+        resultado = pedido_manager.obtenerDetallePedido(id_pedido)
+        
+        if resultado['success'] and resultado['data']:
+            pedido = resultado['data']
+            return Response({
+                'success': True,
+                'message': 'Estado de pago obtenido',
+                'data': {
+                    'id_pedido': pedido.id_pedido,
+                    'metodo_pago': pedido.metodo_pago,
+                    'estado_pago': pedido.estado_pago,
+                    'transaccion_id': pedido.transaccion_id,
+                    'fecha_pago': pedido.fecha_pago.isoformat() if pedido.fecha_pago else None,
+                    'total': pedido.total
+                }
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'success': False,
+                'message': 'Pedido no encontrado',
+                'data': None
+            }, status=status.HTTP_404_NOT_FOUND)
+            
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': f'Error al obtener estado de pago: {str(e)}',
+            'data': None
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

@@ -95,6 +95,16 @@ class ProveedorDAO:
             print(f"Error al obtener proveedor: {e}")
             return None
 
+    # Alias para compatibilidad con managers que esperan camelCase
+    def obtenerPorId(self, id_proveedor):
+        prov = self.obtener_por_id(id_proveedor)
+        if prov:
+            try:
+                return prov.to_dict()
+            except AttributeError:
+                return prov
+        return None
+
     def listar_todos(self, solo_activos=True):
         """
         Lista todos los proveedores

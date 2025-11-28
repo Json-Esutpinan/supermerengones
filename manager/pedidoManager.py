@@ -265,6 +265,76 @@ class PedidoManager:
                 'data': None
             }
 
+    def procesarPago(self, id_pedido, metodo_pago, transaccion_id=None):
+        """
+        Procesa el pago de un pedido (HU15 - Pago en Línea)
+        
+        Args:
+            id_pedido: ID del pedido
+            metodo_pago: Método de pago (efectivo, tarjeta, transferencia, yape, plin)
+            transaccion_id: ID de transacción del procesador (opcional)
+            
+        Returns:
+            dict con 'success', 'message' y 'data' (pedido actualizado)
+        """
+        try:
+            # Validar que el pedido existe
+            pedido = self.dao.obtener_por_id(id_pedido)
+            if not pedido:
+                return {
+                    'success': False,
+                    'message': 'Pedido no encontrado',
+                    'data': None
+                }
+            
+            # Validar método de pago
+            metodos_validos = ['efectivo', 'tarjeta', 'transferencia', 'yape', 'plin']
+            if metodo_pago not in metodos_validos:
+                return {
+                    'success': False,
+                    'message': f'Método de pago inválido. Métodos permitidos: {", ".join(metodos_validos)}',
+                    'data': None
+                }
+            
+            # Validar que el pedido no esté cancelado
+            if pedido.estado == 'cancelado':
+                return {
+                    'success': False,
+                    'message': 'No se puede procesar el pago de un pedido cancelado',
+                    'data': None
+                }
+            
+            # Validar que el pago no haya sido procesado ya
+            if pedido.estado_pago == 'pagado':
+                return {
+                    'success': False,
+                    'message': 'El pago de este pedido ya fue procesado',
+                    'data': None
+                }
+            
+            # Actualizar información de pago
+            pedido_actualizado = self.dao.actualizar_pago(id_pedido, metodo_pago, 'pagado', transaccion_id)
+            
+            if not pedido_actualizado:
+                return {
+                    'success': False,
+                    'message': 'Error al procesar el pago',
+                    'data': None
+                }
+            
+            return {
+                'success': True,
+                'message': f'Pago procesado exitosamente con {metodo_pago}',
+                'data': pedido_actualizado
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'Error al procesar pago: {str(e)}',
+                'data': None
+            }
+
     def listarPedidoPorCliente(self, id_cliente):
         """
         Alias de obtenerHistorialCliente para compatibilidad
@@ -284,3 +354,4 @@ class PedidoManager:
         Registrar reclamo
         """
         pass
+

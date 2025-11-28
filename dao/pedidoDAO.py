@@ -28,7 +28,7 @@ class PedidoDAO:
             Objeto Pedido con sus detalles o None si no existe
         """
         try:
-            # Obtener pedido con información de sede
+            # Obtener pedido con información de sede (incluyendo campos de pago HU15)
             response = self.supabase.table(self.tabla_pedido)\
                 .select("*, sede(nombre)")\
                 .eq('id_pedido', id_pedido)\
@@ -39,7 +39,7 @@ class PedidoDAO:
             
             pedido = Pedido.from_dict(response.data[0])
             
-            # Obtener detalles del pedido con información del producto
+            # Obtener detalles del pedido con información del producto (incluyendo personalizacion HU14)
             detalles_response = self.supabase.table(self.tabla_detalle)\
                 .select("*, producto(nombre)")\
                 .eq('id_pedido', id_pedido)\
@@ -208,9 +208,52 @@ class PedidoDAO:
             print(f"Error al actualizar estado del pedido: {e}")
             return None
     
+    def actualizar_pago(self, id_pedido, metodo_pago, estado_pago, transaccion_id=None):
+        """
+        Actualiza la información de pago de un pedido (HU15)
+        
+        Args:
+            id_pedido: ID del pedido
+            metodo_pago: Método de pago (efectivo, tarjeta, transferencia, etc.)
+            estado_pago: Estado del pago (pendiente, pagado, fallido, reembolsado)
+            transaccion_id: ID de la transacción (opcional)
+            
+        Returns:
+            Objeto Pedido actualizado o None si hay error
+        """
+        try:
+            from datetime import datetime
+            
+            datos_actualizacion = {
+                'metodo_pago': metodo_pago,
+                'estado_pago': estado_pago
+            }
+            
+            if transaccion_id:
+                datos_actualizacion['transaccion_id'] = transaccion_id
+            
+            # Si el pago es exitoso, registrar fecha de pago
+            if estado_pago == 'pagado':
+                datos_actualizacion['fecha_pago'] = datetime.now().isoformat()
+            
+            response = self.supabase.table(self.tabla_pedido)\
+                .update(datos_actualizacion)\
+                .eq('id_pedido', id_pedido)\
+                .execute()
+            
+            if response.data:
+                return Pedido.from_dict(response.data[0])
+            
+            return None
+            
+        except Exception as e:
+            print(f"Error al actualizar pago del pedido: {e}")
+            return None
+    
     def _cargar_detalles(self, pedido):
         """
         Carga los detalles de un pedido (método privado)
+        Incluye personalización de productos (HU14)
         
         Args:
             pedido: Objeto Pedido

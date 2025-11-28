@@ -1,12 +1,14 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from manager.sedeManager import SedeManager
 
 sede_manager = SedeManager()
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def crear_sede(request):
     """
     Crea una nueva sede
@@ -107,6 +109,7 @@ def obtener_sede(request, id_sede):
 
 
 @api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
 def modificar_sede(request, id_sede):
     """
     Modifica una sede existente
@@ -138,6 +141,7 @@ def modificar_sede(request, id_sede):
 
 
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def desactivar_sede(request, id_sede):
     """
     Desactiva una sede
@@ -160,6 +164,57 @@ def desactivar_sede(request, id_sede):
             'data': None
         }, status=codigo_estado)
 
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': f"Error al procesar la solicitud: {str(e)}",
+            'data': None
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def cambiar_estado_sede(request, id_sede):
+    """
+    Cambia el estado de una sede (activo/inactivo)
+    
+    Body (JSON):
+    {
+        "activo": true/false
+    }
+    """
+    try:
+        activo = request.data.get('activo')
+        
+        if activo is None:
+            return Response({
+                'success': False,
+                'message': 'El campo "activo" es requerido'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not isinstance(activo, bool):
+            return Response({
+                'success': False,
+                'message': 'El campo "activo" debe ser true o false'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        resultado = sede_manager.cambiarEstado(id_sede, activo)
+        
+        if resultado["success"]:
+            return Response({
+                'success': True,
+                'message': resultado['message'],
+                'data': resultado['data'].to_dict() if resultado.get('data') else None
+            }, status=status.HTTP_200_OK)
+        
+        codigo_estado = status.HTTP_404_NOT_FOUND if 'no encontrado' in resultado['message'].lower() else status.HTTP_400_BAD_REQUEST
+        
+        return Response({
+            'success': False,
+            'message': resultado['message'],
+            'data': None
+        }, status=codigo_estado)
+    
     except Exception as e:
         return Response({
             'success': False,

@@ -7,7 +7,8 @@ class DetallePedido:
     """
     
     def __init__(self, id_detalle=None, id_pedido=None, id_producto=None,
-                 cantidad=0, precio_unitario=0.0, subtotal=0.0, nombre_producto=None):
+                 cantidad=0, precio_unitario=0.0, subtotal=0.0, nombre_producto=None,
+                 personalizacion=None):
         """
         Constructor de DetallePedido
         
@@ -19,6 +20,7 @@ class DetallePedido:
             precio_unitario: Precio unitario del producto
             subtotal: Subtotal (cantidad * precio_unitario)
             nombre_producto: Nombre del producto (para joins)
+            personalizacion: HU14 - Detalles de personalización (texto o JSON)
         """
         self.id_detalle = id_detalle
         self.id_pedido = id_pedido
@@ -27,6 +29,7 @@ class DetallePedido:
         self.precio_unitario = float(precio_unitario) if precio_unitario else 0.0
         self.subtotal = float(subtotal) if subtotal else 0.0
         self.nombre_producto = nombre_producto
+        self.personalizacion = personalizacion  # HU14
     
     def to_dict(self):
         """
@@ -41,7 +44,8 @@ class DetallePedido:
             'id_producto': self.id_producto,
             'cantidad': self.cantidad,
             'precio_unitario': float(self.precio_unitario),
-            'subtotal': float(self.subtotal)
+            'subtotal': float(self.subtotal),
+            'personalizacion': self.personalizacion  # HU14
         }
         
         if self.nombre_producto:
@@ -67,7 +71,8 @@ class DetallePedido:
             cantidad=data.get('cantidad', 0),
             precio_unitario=data.get('precio_unitario', 0.0),
             subtotal=data.get('subtotal', 0.0),
-            nombre_producto=data.get('nombre_producto')
+            nombre_producto=data.get('nombre_producto'),
+            personalizacion=data.get('personalizacion')  # HU14
         )
     
     def __str__(self):

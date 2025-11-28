@@ -258,3 +258,33 @@ def desactivar_proveedor(request, id_proveedor):
             'message': f'Error al procesar la solicitud: {str(e)}',
             'data': None
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def obtener_estadisticas_proveedor(request, id_proveedor):
+    """
+    Obtiene estadísticas de compras de un proveedor.
+
+    GET /api/proveedores/{id_proveedor}/estadisticas/
+    """
+    try:
+        resultado = proveedor_manager.obtener_estadisticas(id_proveedor)
+
+        if resultado.get('success'):
+            return Response({
+                'success': True,
+                'message': resultado.get('message'),
+                'data': resultado.get('data')
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'success': False,
+                'message': resultado.get('message'),
+                'data': None
+            }, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': f'Error al procesar la solicitud: {str(e)}',
+            'data': None
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

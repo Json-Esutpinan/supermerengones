@@ -227,3 +227,79 @@ def agregar_respuesta_reclamo(request, id_reclamo):
             'message': resultado['message'],
             'data': None
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def resolver_reclamo(request, id_reclamo):
+    """
+    POST /api/reclamos/{id_reclamo}/resolver/
+    Marca el reclamo como resuelto, con respuesta opcional.
+    Body opcional:
+        {
+            "respuesta": "Texto de la respuesta"
+        }
+    """
+    respuesta = request.data.get('respuesta')
+
+    resultado = manager.resolver_reclamo(id_reclamo, respuesta)
+
+    if resultado.get('success'):
+        return Response({
+            'success': True,
+            'message': resultado.get('message'),
+            'data': resultado.get('data').to_dict() if resultado.get('data') else None
+        }, status=status.HTTP_200_OK)
+    else:
+        return Response({
+            'success': False,
+            'message': resultado.get('message'),
+            'data': None
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def rechazar_reclamo(request, id_reclamo):
+    """
+    POST /api/reclamos/{id_reclamo}/rechazar/
+    Marca el reclamo como rechazado, con razón opcional.
+    Body opcional:
+        {
+            "razon": "Texto de la razón"
+        }
+    """
+    razon = request.data.get('razon')
+
+    resultado = manager.rechazar_reclamo(id_reclamo, razon)
+
+    if resultado.get('success'):
+        return Response({
+            'success': True,
+            'message': resultado.get('message'),
+            'data': resultado.get('data').to_dict() if resultado.get('data') else None
+        }, status=status.HTTP_200_OK)
+    else:
+        return Response({
+            'success': False,
+            'message': resultado.get('message'),
+            'data': None
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def obtener_estadisticas_reclamos(request):
+    """
+    GET /api/reclamos/estadisticas/
+    Devuelve estadísticas agregadas de reclamos: total y conteos por estado.
+    """
+    stats = manager.obtener_estadisticas()
+
+    success = 'error' not in stats
+    return Response({
+        'success': success,
+        'message': 'Estadísticas obtenidas' if success else f"Error: {stats.get('error')}",
+        'data': {
+            'total': stats.get('total', 0),
+            'por_estado': stats.get('por_estado', {}),
+            'por_tipo': stats.get('por_tipo', {})
+        }
+    }, status=status.HTTP_200_OK if success else status.HTTP_500_INTERNAL_SERVER_ERROR)

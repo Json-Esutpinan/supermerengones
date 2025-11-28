@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from dao.proveedorDAO import ProveedorDAO
+from dao.compraDAO import CompraDAO
 from entidades.proveedor import Proveedor
 import re
 
 class ProveedorManager:
     def __init__(self):
         self.dao = ProveedorDAO()
+        self.compra_dao = CompraDAO()
 
     def crearProveedor(self, nombre, email, telefono, direccion):
         """
@@ -351,3 +353,52 @@ class ProveedorManager:
         """
         patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         return re.match(patron, email) is not None
+
+    def obtener_estadisticas(self, id_proveedor):
+        """
+        Retorna estadísticas básicas de compras para un proveedor.
+
+        Incluye: total_compras, monto_total, ultima_compra (fecha), compras_recientes (lista corta).
+        """
+        if not id_proveedor:
+            return {
+                'success': False,
+                'message': 'id_proveedor es requerido',
+                'data': None
+            }
+
+        try:
+            compras = self.compra_dao.listar_por_proveedor(id_proveedor=id_proveedor, limite=1000) or []
+
+            total_compras = len(compras)
+            monto_total = 0.0
+            ultima_compra = None
+
+            for c in compras:
+                try:
+                    monto_total += float(c.get('total', 0) or 0)
+                except Exception:
+                    pass
+                fecha = c.get('fecha')
+                if fecha:
+                    if not ultima_compra or str(fecha) > str(ultima_compra):
+                        ultima_compra = fecha
+
+            resumen = {
+                'total_compras': total_compras,
+                'monto_total': round(monto_total, 2),
+                'ultima_compra': ultima_compra,
+                'compras_recientes': compras[:5]
+            }
+
+            return {
+                'success': True,
+                'message': 'Estadísticas calculadas',
+                'data': resumen
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'Error al obtener estadísticas: {str(e)}',
+                'data': None
+            }
