@@ -208,46 +208,76 @@ def add_to_cart(request, product_id):
 
 
 def login_view(request):
-    """Maneja el inicio de sesión con Django auth; respeta el parámetro 'next'."""
+    """Maneja el inicio de sesión validando directamente contra la tabla `usuario` en Supabase.
+    
+    Usa bcrypt para validar contraseña.
+    """
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        # Usamos el email como username (según registro simple que implementamos)
-        user = authenticate(request, username=email, password=password)
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '').strip()
         next_url = request.GET.get('next') or request.POST.get('next')
         if not next_url:
-            # si no hay next, llevar al usuario al dashboard
             next_url = reverse('dashboard')
-        if user is not None:
-            login(request, user)
-            messages.success(request, f'Bienvenido {user.username}!')
-            return redirect(next_url)
 
-        # Fallback: intentar autenticar contra la tabla `usuario` usando AuthManager (bcrypt)
+        if not email or not password:
+            messages.error(request, 'Email y contraseña requeridos.')
+            return redirect(reverse('login') + f'?next={next_url}')
+
+        # Obtener usuario directamente de Supabase
         try:
-            am = AuthManager()
-            resp = am.login(email, password)
-            if resp.get('success') and resp.get('data'):
-                # sincronizar con Django User para establecer sesión
-                try:
-                    django_user, created = User.objects.get_or_create(username=email, defaults={'email': email, 'first_name': getattr(resp['data'], 'nombre', '') or ''})
-                    # establecer contraseña en el usuario Django para permitir authenticate/login
-                    django_user.set_password(password)
-                    django_user.save()
-                    # volver a autenticar con Django y establecer sesión
-                    user = authenticate(request, username=email, password=password)
-                    if user is not None:
-                        login(request, user)
-                        messages.success(request, f'Bienvenido {user.username}!')
-                        return redirect(next_url)
-                except Exception:
-                    pass
-
-        except Exception:
-            pass
-
-        messages.error(request, 'Credenciales inválidas. Intenta de nuevo.')
-        return redirect(reverse('login') + f'?next={next_url}')
+            supabase = get_supabase_client()
+            resp = supabase.table('usuario').select('*').eq('email', email).execute()
+            
+            if not resp or not resp.data or len(resp.data) == 0:
+                messages.error(request, 'Email o contraseña inválidos.')
+                return redirect(reverse('login') + f'?next={next_url}')
+            
+            usuario_row = resp.data[0]
+            nombre = usuario_row.get('nombre', '')
+            password_hash = usuario_row.get('password', '')
+            rol = usuario_row.get('rol', 'cliente')
+            
+            # Validar contraseña con bcrypt
+            if not password_hash:
+                messages.error(request, 'Email o contraseña inválidos.')
+                return redirect(reverse('login') + f'?next={next_url}')
+            
+            try:
+                import bcrypt
+                if not bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8')):
+                    messages.error(request, 'Email o contraseña inválidos.')
+                    return redirect(reverse('login') + f'?next={next_url}')
+            except Exception as e:
+                messages.error(request, 'Error validando contraseña.')
+                return redirect(reverse('login') + f'?next={next_url}')
+            
+            # Contraseña válida: crear/sincronizar Django User
+            try:
+                django_user, created = User.objects.get_or_create(
+                    username=email,
+                    defaults={'email': email, 'first_name': nombre}
+                )
+                django_user.set_password(password)
+                django_user.save()
+            except Exception:
+                pass
+            
+            # Autenticar y establecer sesión de Django
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
+                # Guardar rol en sesión para acceso a admin
+                request.session['user_rol'] = rol
+                messages.success(request, f'¡Bienvenido {nombre or email}!')
+                return redirect(next_url)
+            else:
+                messages.error(request, 'Error al establecer sesión.')
+                return redirect(reverse('login') + f'?next={next_url}')
+        
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+            return redirect(reverse('login') + f'?next={next_url}')
+    
     # GET -> renderizar form
     return render(request, 'supermerengones/login.html')
 
@@ -311,3 +341,50 @@ def dashboard(request):
         {'label': 'Historial de Pedidos', 'url': reverse('listar_todos_pedidos')},
     ]
     return render(request, 'supermerengones/dashboard.html', {'actions': actions})
+
+
+@login_required
+def admin_panel(request):
+    """Panel administrativo. Comprueba rol desde la sesión o desde la tabla `usuario`.
+
+    Requerimientos: rol guardado en sesión o en tabla usuario con valor 'administrador'.
+    """
+    # Obtener rol de la sesión (se guardó al iniciar sesión)
+    user_rol = request.session.get('user_rol', '').lower()
+    
+    # Si no está en sesión, intentar obtener de la tabla `usuario`
+    if not user_rol:
+        try:
+            udao = UsuarioDAO()
+            resp = udao.obtener_por_email(request.user.email)
+            user_row = resp.data[0] if resp and getattr(resp, 'data', None) else None
+            user_rol = (user_row.get('rol') or '').lower() if user_row else ''
+        except Exception:
+            user_rol = ''
+
+    if user_rol != 'administrador':
+        return HttpResponseForbidden('Acceso denegado: se requiere rol administrador')
+
+    # Si es administrador, cargar recursos para el panel
+    users = []
+    sedes = []
+    try:
+        udao = UsuarioDAO()
+        users = udao.listar(solo_activos=False).data or []
+    except Exception:
+        users = []
+
+    try:
+        sm = SedeManager()
+        resultado = sm.listarSedes(solo_activos=False)
+        if resultado.get('success'):
+            sedes = [s.to_dict() if hasattr(s, 'to_dict') else s for s in resultado.get('data', [])]
+    except Exception:
+        sedes = []
+
+    context = {
+        'users': users,
+        'sedes': sedes,
+    }
+
+    return render(request, 'supermerengones/admin_panel.html', context)
