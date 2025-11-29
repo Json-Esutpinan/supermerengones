@@ -1,0 +1,50 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Enviar Notificación Masiva{% endblock %}
+{% block content %}
+<h2>Enviar Notificación Masiva</h2>
+<form method="post">{% csrf_token %}
+  <div class="mb-2">
+    <label>Título</label>
+    <input type="text" name="titulo" class="form-control" required>
+  </div>
+  <div class="mb-2">
+    <label>Mensaje</label>
+    <textarea name="mensaje" class="form-control" rows="4" required></textarea>
+  </div>
+  <div class="mb-2">
+    <label>Segmento</label>
+    <select name="segmento" id="segmento" class="form-select" required>
+      <option value="todos">Todos los clientes</option>
+      <option value="rol">Por rol</option>
+      <option value="sede">Por sede</option>
+      <option value="rol_sede">Rol + sede</option>
+    </select>
+  </div>
+  <div class="mb-2" id="rol-wrapper" style="display:none;">
+    <label>Rol</label>
+    <select name="rol" class="form-select">
+      <option value="cliente">Cliente</option>
+    </select>
+  </div>
+  <div class="mb-2" id="sede-wrapper" style="display:none;">
+    <label>Sede (ID)</label>
+    <input type="number" min="1" name="sede" class="form-control" placeholder="ID sede">
+  </div>
+  <button class="btn btn-primary" type="submit">Enviar</button>
+  <a href="{% url 'notificaciones_admin' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+<script>
+  (function(){
+    const seg = document.getElementById('segmento');
+    const rolW = document.getElementById('rol-wrapper');
+    const sedeW = document.getElementById('sede-wrapper');
+    function update(){
+      const v = seg.value;
+      rolW.style.display = (v === 'rol' || v === 'rol_sede') ? 'block' : 'none';
+      sedeW.style.display = (v === 'sede' || v === 'rol_sede') ? 'block' : 'none';
+    }
+    seg.addEventListener('change', update);
+    update();
+  })();
+</script>
+{% endblock %}

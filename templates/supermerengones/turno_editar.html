@@ -1,0 +1,30 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Editar Turno{% endblock %}
+{% block content %}
+<h2>Editar Turno</h2>
+<form method="post">
+  {% csrf_token %}
+  <div>
+    <label>Empleado</label>
+    <select name="id_empleado" required>
+      {% for e in empleados %}
+        <option value="{{ e.id_empleado }}" {% if turno.id_empleado == e.id_empleado %}selected{% endif %}>{{ e.id_empleado }} - {{ e.usuario.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label>Fecha</label>
+    <input type="date" name="fecha" value="{{ turno.fecha|slice:':10' }}" required />
+  </div>
+  <div>
+    <label>Hora Inicio</label>
+    <input type="time" name="hora_inicio" value="{{ turno.hora_inicio|slice:':5' }}" required />
+  </div>
+  <div>
+    <label>Hora Fin</label>
+    <input type="time" name="hora_fin" value="{{ turno.hora_fin|slice:':5' }}" required />
+  </div>
+  <button type="submit" class="btn btn-primary">Actualizar</button>
+  <a href="{% url 'turnos_admin_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+	.order-creation-header {
+		background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+		color: white;
+		padding: 40px 20px;
+		border-radius: 12px;
+		margin-bottom: 40px;
+		text-align: center;
+	}
+
+	.order-creation-header h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2.2rem;
+		margin-bottom: 10px;
+	}
+
+	.order-form-container {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 0 20px;
+	}
+
+	.order-form-card {
+		background: white;
+		border-radius: 12px;
+		padding: 30px;
+		box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+		margin-bottom: 40px;
+	}
+
+	.form-section-title {
+		font-family: 'Playfair Display', serif;
+		font-size: 1.4rem;
+		color: var(--dark);
+		margin-bottom: 20px;
+		padding-bottom: 15px;
+		border-bottom: 2px solid var(--border);
+	}
+
+	#items-container {
+		margin-bottom: 25px;
+	}
+
+	.item-row {
+		background: var(--light-2);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		padding: 20px;
+		margin-bottom: 15px;
+		display: grid;
+		grid-template-columns: 1fr 120px auto;
+		gap: 15px;
+		align-items: flex-end;
+	}
+
+	.item-row label {
+		display: block;
+		font-weight: 600;
+		color: var(--dark);
+		margin-bottom: 6px;
+		font-size: 0.95rem;
+	}
+
+	.item-row select,
+	.item-row input {
+		width: 100%;
+		padding: 10px 12px;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		font-family: 'Inter', sans-serif;
+		font-size: 0.95rem;
+	}
+
+	.item-row select:focus,
+	.item-row input:focus {
+		outline: none;
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px rgba(231, 84, 128, 0.1);
+	}
+
+	.cantidad-input {
+		text-align: center;
+	}
+
+	.remove-btn {
+		background: var(--danger);
+		color: white;
+		border: none;
+		border-radius: 6px;
+		padding: 10px 14px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		width: 100%;
+	}
+
+	.remove-btn:hover {
+		background: #c82333;
+		transform: translateY(-2px);
+	}
+
+	#add-item-btn {
+		background: transparent;
+		color: var(--primary);
+		border: 2px solid var(--primary);
+		padding: 10px 20px;
+		border-radius: 6px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		margin-bottom: 25px;
+	}
+
+	#add-item-btn:hover {
+		background: var(--primary);
+		color: white;
+	}
+
+	.order-summary {
+		background: linear-gradient(135deg, #f5e6eb 0%, #ffe6f0 100%);
+		border-radius: 8px;
+		padding: 25px;
+		margin-bottom: 25px;
+	}
+
+	.summary-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+		font-size: 1.05rem;
+		color: var(--dark);
+	}
+
+	.summary-row.total {
+		font-size: 1.4rem;
+		font-weight: 700;
+		color: var(--primary);
+		border-top: 2px solid rgba(0,0,0,0.1);
+		padding-top: 12px;
+		margin-top: 12px;
+	}
+
+	.form-actions {
+		display: flex;
+		gap: 15px;
+		margin-top: 25px;
+	}
+
+	.form-actions button {
+		flex: 1;
+		padding: 14px;
+		border: none;
+		border-radius: 6px;
+		font-weight: 700;
+		font-size: 1rem;
+		cursor: pointer;
+		transition: all 0.3s ease;
+	}
+
+	.form-actions button[type="submit"] {
+		background: var(--primary);
+		color: white;
+	}
+
+	.form-actions button[type="submit"]:hover {
+		background: var(--primary-dark);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(231, 84, 128, 0.3);
+	}
+
+	.form-help {
+		background: #d1ecf1;
+		border: 1px solid #bee5eb;
+		border-radius: 8px;
+		padding: 16px;
+		color: #0c5460;
+		margin-top: 25px;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.order-creation-header h1 {
+			font-size: 1.8rem;
+		}
+
+		.order-form-card {
+			padding: 20px;
+		}
+
+		.item-row {
+			grid-template-columns: 1fr;
+			gap: 10px;
+		}
+
+		.remove-btn {
+			width: 100%;
+		}
+
+		.form-actions {
+			flex-direction: column;
+		}
+
+		.form-actions button {
+			width: 100%;
+		}
+	}
+</style>
+
+<div class="order-creation-header">
+	<h1>🍰 Crear Tu Pedido</h1>
+	<p>Selecciona los merengones que deseas ordenar</p>
+</div>
+
+<div class="order-form-container">
+	<form id="pedido-form" method="post" class="order-form-card">
+		{% csrf_token %}
+		
+		<div style="display:none">
+			<label for="id_sede">Sede:</label>
+			<input type="number" name="id_sede" id="id_sede">
+		</div>
+
+		<h2 class="form-section-title">Selecciona tus Productos</h2>
+
+		<div id="items-container">
+			{% if prefilled_items %}
+				{% for it in prefilled_items %}
+				<div class="item-row">
+					<div>
+						<label>Producto {{ forloop.counter }}:</label>
+						<select name="p{{ forloop.counter }}_id" class="producto-select">
+							<option value="">-- Seleccione --</option>
+							{% for p in productos %}
+								<option value="{{ p.id }}" data-precio="{{ p.price }}" {% if p.id == it.id %}selected{% endif %}>{{ p.name }} - ${{ p.price }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div>
+						<label>Cantidad:</label>
+						<input type="number" min="1" name="p{{ forloop.counter }}_qty" class="cantidad-input" value="{{ it.qty }}">
+					</div>
+					<button type="button" class="remove-btn" style="display:none">Quitar</button>
+				</div>
+				{% endfor %}
+				{% for i in "123"|slice:":{{ 3-prefilled_items|length }}" %}
+				<div class="item-row">
+					<div>
+						<label>Producto {{ prefilled_items|length|add:forloop.counter }}:</label>
+						<select name="p{{ prefilled_items|length|add:forloop.counter }}_id" class="producto-select">
+							<option value="">-- Seleccione --</option>
+							{% for p in productos %}
+								<option value="{{ p.id }}" data-precio="{{ p.price }}">{{ p.name }} - ${{ p.price }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div>
+						<label>Cantidad:</label>
+						<input type="number" min="1" name="p{{ prefilled_items|length|add:forloop.counter }}_qty" class="cantidad-input">
+					</div>
+					<button type="button" class="remove-btn" style="display:none">Quitar</button>
+				</div>
+				{% endfor %}
+			{% else %}
+				{% for i in "123" %}
+				<div class="item-row">
+					<div>
+						<label>Producto {{ forloop.counter }}:</label>
+						<select name="p{{ forloop.counter }}_id" class="producto-select">
+							<option value="">-- Seleccione --</option>
+							{% for p in productos %}
+								<option value="{{ p.id }}" data-precio="{{ p.price }}">{{ p.name }} - ${{ p.price }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div>
+						<label>Cantidad:</label>
+						<input type="number" min="1" name="p{{ forloop.counter }}_qty" class="cantidad-input">
+					</div>
+					<button type="button" class="remove-btn" style="display:none">Quitar</button>
+				</div>
+				{% endfor %}
+			{% endif %}
+		</div>
+
+		<button type="button" id="add-item-btn">+ Agregar Otro Producto</button>
+
+		<div class="order-summary">
+			<div class="summary-row">
+				<span>Subtotal:</span>
+				<span>$<span id="subtotal">0.00</span></span>
+			</div>
+			<div class="summary-row">
+				<span>Impuestos (19%):</span>
+				<span>$<span id="impuestos">0.00</span></span>
+			</div>
+			<div class="summary-row total">
+				<span>Total:</span>
+				<span>$<span id="total-estimado">0.00</span></span>
+			</div>
+		</div>
+
+		<div class="form-actions">
+			<button type="submit">✓ Crear Pedido</button>
+		</div>
+	</form>
+
+	<div class="form-help">
+		<strong>💡 Nota:</strong> La sede se asigna automáticamente. Si tienes preguntas sobre tu pedido, contáctanos en cualquiera de nuestras sedes.
+	</div>
+</div>
+
+<template id="item-row-template">
+	<div class="item-row">
+		<div>
+			<label>Producto __N__:</label>
+			<select name="__PID___id" class="producto-select">
+				<option value="">-- Seleccione --</option>
+				{% for p in productos %}
+					<option value="{{ p.id }}" data-precio="{{ p.price }}">{{ p.name }} - ${{ p.price }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div>
+			<label>Cantidad:</label>
+			<input type="number" min="1" name="__PID___qty" class="cantidad-input">
+		</div>
+		<button type="button" class="remove-btn">Quitar</button>
+	</div>
+</template>
+
+<script>
+(function(){
+	const container = document.getElementById('items-container');
+	const addBtn = document.getElementById('add-item-btn');
+	const totalSpan = document.getElementById('total-estimado');
+	const form = document.getElementById('pedido-form');
+	const MAX_ITEMS = 10;
+
+	function renumerar(){
+		const rows = container.querySelectorAll('.item-row');
+		rows.forEach((row, idx) => {
+			const num = idx + 1;
+			row.querySelector('label').textContent = 'Producto ' + num + ':';
+			const sel = row.querySelector('.producto-select');
+			const qty = row.querySelector('.cantidad-input');
+			sel.name = 'p' + num + '_id';
+			qty.name = 'p' + num + '_qty';
+			const removeBtn = row.querySelector('.remove-btn');
+			removeBtn.style.display = rows.length > 1 ? 'inline-block' : 'none';
+		});
+	}
+
+	function calcularTotal(){
+		let subtotal = 0;
+		container.querySelectorAll('.item-row').forEach(row => {
+			const sel = row.querySelector('.producto-select');
+			const qtyInput = row.querySelector('.cantidad-input');
+			const selectedOption = sel.options[sel.selectedIndex];
+			const precio = selectedOption ? parseFloat(selectedOption.getAttribute('data-precio') || '0') : 0;
+			const qty = parseInt(qtyInput.value || '0', 10);
+			console.log('DEBUG - Producto:', selectedOption?.text, 'Precio attr:', selectedOption?.getAttribute('data-precio'), 'Precio parseado:', precio, 'Cantidad:', qty);
+			if(precio > 0 && qty > 0) subtotal += precio * qty;
+		});
+		const impuestos = subtotal * 0.19;
+		const total = subtotal + impuestos;
+		
+		console.log('DEBUG - Subtotal:', subtotal, 'Impuestos:', impuestos, 'Total:', total);
+		document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+		document.getElementById('impuestos').textContent = impuestos.toFixed(2);
+		document.getElementById('total-estimado').textContent = total.toFixed(2);
+	}
+
+	function addRow(){
+		const current = container.querySelectorAll('.item-row').length;
+		if(current >= MAX_ITEMS){
+			alert('Máximo ' + MAX_ITEMS + ' productos.');
+			return;
+		}
+		const tpl = document.getElementById('item-row-template').content.cloneNode(true);
+		container.appendChild(tpl);
+		renumerar();
+	}
+
+	container.addEventListener('change', function(e){
+		if(e.target.classList.contains('producto-select') || e.target.classList.contains('cantidad-input')){
+			calcularTotal();
+		}
+	});
+
+	container.addEventListener('input', function(e){
+		if(e.target.classList.contains('cantidad-input')){
+			calcularTotal();
+		}
+	});
+
+	container.addEventListener('click', function(e){
+		if(e.target.classList.contains('remove-btn')){
+			e.target.closest('.item-row').remove();
+			renumerar();
+			calcularTotal();
+		}
+	});
+
+	addBtn.addEventListener('click', function(){
+		addRow();
+	});
+
+	form.addEventListener('submit', function(e){
+		const rows = container.querySelectorAll('.item-row');
+		let valid = true;
+		rows.forEach(r => {
+			const sel = r.querySelector('.producto-select');
+			const qty = r.querySelector('.cantidad-input');
+			if(sel.value && (!qty.value || parseInt(qty.value,10) <= 0)){
+				valid = false;
+			}
+		});
+		if(!valid){
+			e.preventDefault();
+			alert('Verifique cantidades (>0) para productos seleccionados.');
+		}
+	});
+
+	renumerar();
+	calcularTotal();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Detalle Pedido{% endblock title %}
+{% block content %}
+<h2>Detalle Pedido</h2>
+{% if pedido %}
+<ul>
+    <li>ID: {{ pedido.id_pedido }}</li>
+    <li>Cliente: {{ pedido.id_cliente }}</li>
+    <li>Fecha: {{ pedido.fecha }}</li>
+    <li>Estado: {{ pedido.estado }}</li>
+    <li>Total: {{ pedido.total }}</li>
+    <li>Método Pago: {{ pedido.metodo_pago }}</li>
+    <li>Estado Pago: {{ pedido.estado_pago }}</li>
+</ul>
+
+ <div class="card" style="overflow:auto; margin:12px 0;">
+     <table class="table">
+         <thead>
+             <tr>
+                  <th>Producto</th>
+                 <th>Cantidad</th>
+                 <th>Precio Unit.</th>
+                 <th>Subtotal</th>
+             </tr>
+         </thead>
+         <tbody>
+             {% for l in lineas %}
+                 <tr>
+                       <td>{{ l.producto_nombre }}{% if not l.producto_nombre %} (ID {{ l.id_producto }}){% endif %}</td>
+                     <td>{{ l.cantidad }}</td>
+                       <td>$ {{ l.precio_unitario|floatformat:2 }} COP</td>
+                       <td>$ {{ l.subtotal|floatformat:2 }} COP</td>
+                 </tr>
+             {% empty %}
+                 <tr><td colspan="4">Sin líneas registradas.</td></tr>
+             {% endfor %}
+         </tbody>
+         <tfoot>
+             <tr>
+                 <td colspan="3" style="text-align:right;"><strong>Total</strong></td>
+                <td><strong>$ {{ pedido.total|floatformat:2 }} COP</strong></td>
+             </tr>
+         </tfoot>
+     </table>
+ </div>
+{% if request.user.is_authenticated %}
+{% if request.session.user_rol == 'empleado' or request.session.user_rol == 'administrador' %}
+<div style="margin-top:12px;">
+    {% if pedido.estado == 'nuevo' %}
+        <form method="post" action="{% url 'pedido_accion_estado' pedido.id_pedido 'aceptar' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Aceptar</button>
+        </form>
+        <form method="post" action="{% url 'pedido_accion_estado' pedido.id_pedido 'cancelar' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Cancelar</button>
+        </form>
+    {% elif pedido.estado == 'aceptado' %}
+        <form method="post" action="{% url 'pedido_accion_estado' pedido.id_pedido 'preparar' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Marcar en preparación</button>
+        </form>
+        <form method="post" action="{% url 'pedido_accion_estado' pedido.id_pedido 'cancelar' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Cancelar</button>
+        </form>
+    {% elif pedido.estado == 'en_preparacion' %}
+        <form method="post" action="{% url 'pedido_accion_estado' pedido.id_pedido 'entregar' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Marcar entregado</button>
+        </form>
+        <form method="post" action="{% url 'pedido_accion_estado' pedido.id_pedido 'cancelar' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Cancelar</button>
+        </form>
+    {% else %}
+        <p style="color:#666;">No hay acciones disponibles para el estado actual.</p>
+    {% endif %}
+    <p style="margin-top:8px;color:#666;">Acciones visibles para empleados/administradores según el estado actual.</p>
+</div>
+{% endif %}
+{% if request.session.user_rol == 'cliente' and pedido.estado == 'pendiente' %}
+<div style="margin-top:12px;">
+    <form method="post" action="{% url 'pedido_cancelar_cliente' pedido.id_pedido %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-danger">Cancelar Pedido</button>
+    </form>
+    <p style="color:#666;margin-top:4px;">Puede cancelar mientras el pedido esté pendiente.</p>
+</div>
+{% endif %}
+{% endif %}
+
+{# Banners de éxito/error adicionales en esta vista #}
+{% if messages %}
+<div style="max-width:900px;margin:16px 0;padding:0 0;">
+    {% for message in messages %}
+        <div style="padding:10px;border-radius:6px;margin-bottom:8px; background:#e8f5e9; border:1px solid #c8e6c9;"{% if message.tags %} data-tags="{{ message.tags }}"{% endif %}>{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% else %}
+<p>No encontrado.</p>
+{% endif %}
+<script>
+    (function(){
+        try {
+            const rows = document.querySelectorAll('table.table tbody tr');
+            let sum = 0;
+            rows.forEach(r => {
+                const tds = r.querySelectorAll('td');
+                if (tds.length >= 4) {
+                    const text = tds[3].innerText.replace('$','').replace('COP','').trim();
+                    const val = parseFloat(text);
+                    if (!isNaN(val)) sum += val;
+                }
+            });
+            const totalCell = document.querySelector('tfoot td:last-child');
+            if (!totalCell) return;
+            const totalText = totalCell.innerText.replace('$','').replace('COP','').trim();
+            const totalVal = parseFloat(totalText);
+            const container = document.createElement('div');
+            container.style.marginTop = '8px';
+            if (!isNaN(totalVal)) {
+                const ok = Math.abs(sum - totalVal) < 0.01;
+                container.innerHTML = ok
+                    ? '<div style="color:#2e7d32;">Validación: subtotal coincide con el total.</div>'
+                    : '<div style="color:#c62828;">Advertencia: suma de subtotales ('+sum.toFixed(2)+') no coincide con el total ('+totalVal.toFixed(2)+').</div>';
+                const tableCard = document.querySelector('.card');
+                if (tableCard) tableCard.appendChild(container);
+            }
+        } catch (e) { /* silent */ }
+    })();
+</script>
+{% endblock content %}

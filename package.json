@@ -1,0 +1,23 @@
+{
+  "name": "supermerengones",
+  "version": "1.0.0",
+  "description": "- Python 3.8 o superior\r - Cuenta en Supabase (https://supabase.com)\r - Postman (para probar la API)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Json-Esutpinan/supermerengones.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Json-Esutpinan/supermerengones/issues"
+  },
+  "homepage": "https://github.com/Json-Esutpinan/supermerengones#readme",
+  "devDependencies": {
+    "tailwindcss": "^4.1.17"
+  }
+}

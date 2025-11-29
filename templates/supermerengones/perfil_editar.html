@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Editar Perfil{% endblock title %}
+{% block content %}
+<h2>Editar Perfil</h2>
+{% if cliente %}
+<form method="post">
+  {% csrf_token %}
+  <label>Teléfono</label>
+  <input type="text" name="telefono" value="{{ cliente.telefono }}" maxlength="20">
+  <label>Dirección</label>
+  <input type="text" name="direccion" value="{{ cliente.direccion }}" maxlength="255">
+  <button type="submit">Guardar Cambios</button>
+  <a href="{% url 'perfil_usuario' %}">Cancelar</a>
+</form>
+{% else %}
+  <p>No se pudo cargar datos del cliente.</p>
+{% endif %}
+{% endblock %}

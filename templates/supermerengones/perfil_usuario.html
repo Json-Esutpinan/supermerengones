@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% block title %}Mi Perfil{% endblock title %}
+{% load humanize %}
+{% block content %}
+<style>
+	.profile-header {
+		background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+		color: white;
+		padding: 40px 20px;
+		border-radius: 12px;
+		margin-bottom: 40px;
+		text-align: center;
+	}
+
+	.profile-header h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2.2rem;
+		margin-bottom: 15px;
+	}
+
+	.profile-grid {
+		display: grid;
+		grid-template-columns: 1fr 2fr;
+		gap: 30px;
+		margin-bottom: 40px;
+	}
+
+	.profile-info-card {
+		background: white;
+		border-radius: 12px;
+		padding: 25px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	}
+
+	.profile-info-title {
+		font-family: 'Playfair Display', serif;
+		font-size: 1.4rem;
+		color: var(--dark);
+		margin-bottom: 20px;
+		padding-bottom: 15px;
+		border-bottom: 2px solid var(--border);
+	}
+
+	.profile-info-row {
+		display: flex;
+		justify-content: space-between;
+		padding: 12px 0;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.profile-info-row:last-child {
+		border-bottom: none;
+	}
+
+	.profile-info-label {
+		font-weight: 600;
+		color: var(--dark);
+	}
+
+	.profile-info-value {
+		color: var(--text);
+	}
+
+	.profile-action-btn {
+		display: inline-block;
+		background: var(--primary);
+		color: white;
+		padding: 10px 20px;
+		border-radius: 6px;
+		text-decoration: none;
+		font-weight: 600;
+		margin-top: 15px;
+		transition: all 0.3s ease;
+	}
+
+	.profile-action-btn:hover {
+		background: var(--primary-dark);
+		transform: translateY(-2px);
+	}
+
+	.section-title {
+		font-family: 'Playfair Display', serif;
+		font-size: 1.5rem;
+		color: var(--dark);
+		margin-bottom: 20px;
+		margin-top: 40px;
+		padding-bottom: 12px;
+		border-bottom: 2px solid var(--border);
+	}
+
+	.orders-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 20px;
+		margin-bottom: 40px;
+	}
+
+	.order-mini-card {
+		background: white;
+		border-radius: 12px;
+		padding: 18px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+		border-left: 4px solid var(--primary);
+	}
+
+	.order-id {
+		font-weight: 700;
+		color: var(--dark);
+		margin-bottom: 8px;
+	}
+
+	.order-mini-status {
+		display: inline-block;
+		padding: 4px 10px;
+		border-radius: 12px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		background: #d4edda;
+		color: #155724;
+		margin-bottom: 10px;
+	}
+
+	.order-mini-total {
+		font-size: 1.3rem;
+		font-weight: 700;
+		color: var(--primary);
+		margin: 10px 0;
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 40px;
+		background: white;
+		border-radius: 12px;
+		color: var(--text);
+	}
+
+	.empty-icon {
+		font-size: 3rem;
+		margin-bottom: 15px;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.profile-header h1 {
+			font-size: 1.8rem;
+		}
+
+		.profile-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.orders-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<div class="profile-header">
+	<h1>👤 Mi Perfil</h1>
+	<p>Información de tu cuenta en Super Merengones</p>
+</div>
+
+{% if rol == 'cliente' and id_cliente %}
+	<div class="profile-grid">
+		<div class="profile-info-card">
+			<h2 class="profile-info-title">Información Personal</h2>
+			<div class="profile-info-row">
+				<span class="profile-info-label">📍 ID Cliente:</span>
+				<span class="profile-info-value">{{ id_cliente }}</span>
+			</div>
+			<div class="profile-info-row">
+				<span class="profile-info-label">👤 Estado:</span>
+				<span class="profile-info-value">
+					<span style="display: inline-block; padding: 4px 10px; background: #d4edda; color: #155724; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">
+						✓ Activo
+					</span>
+				</span>
+			</div>
+			<a href="{% url 'perfil_editar' %}" class="profile-action-btn">✏️ Editar Perfil</a>
+		</div>
+
+		<div class="profile-info-card">
+			<h2 class="profile-info-title">Estadísticas</h2>
+			<div class="profile-info-row">
+				<span class="profile-info-label">📦 Pedidos Totales:</span>
+				<span class="profile-info-value" style="font-weight: 700; color: var(--primary);">{{ pedidos|length }}</span>
+			</div>
+			<div class="profile-info-row">
+				<span class="profile-info-label">⚠️ Reclamos Registrados:</span>
+				<span class="profile-info-value" style="font-weight: 700; color: var(--warning);">{{ reclamos|length }}</span>
+			</div>
+			<div class="profile-info-row">
+				<span class="profile-info-label">💳 Gasto Total:</span>
+				<span class="profile-info-value" style="font-weight: 700; color: var(--primary);">
+					$0.00
+				</span>
+			</div>
+			<div class="profile-info-row">
+				<span class="profile-info-label">⭐ Estado VIP:</span>
+				<span class="profile-info-value">Cliente Regular</span>
+			</div>
+		</div>
+	</div>
+
+	<h2 class="section-title">Pedidos Recientes</h2>
+	{% if pedidos %}
+		<div class="orders-grid">
+			{% for p in pedidos|slice:":6" %}
+			<div class="order-mini-card">
+				<div class="order-id">Pedido #{{ p.id_pedido }}</div>
+				<span class="order-mini-status">{{ p.estado }}</span>
+				<div class="order-mini-total">${{ p.total|default:0|intcomma }}</div>
+				<p style="font-size: 0.85rem; color: var(--text); margin: 8px 0;">
+					📅 {{ p.fecha|date:"d/m/Y" }}
+				</p>
+				<a href="{% url 'pedido_detalle' p.id_pedido %}" style="color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+					Ver detalles →
+				</a>
+			</div>
+			{% endfor %}
+		</div>
+		<a href="{% url 'pedidos_mis' %}" class="btn btn-secondary" style="display: inline-block; margin-bottom: 40px;">Ver Todos los Pedidos</a>
+	{% else %}
+		<div class="empty-state">
+			<div class="empty-icon">📦</div>
+			<h3>Aún no tienes pedidos</h3>
+			<p>¡Comienza a disfrutar nuestros deliciosos merengones!</p>
+			<a href="{% url 'productos' %}" class="btn btn-primary" style="display: inline-block; margin-top: 15px;">Comprar Ahora</a>
+		</div>
+	{% endif %}
+
+	<h2 class="section-title">Reclamos Recientes</h2>
+	{% if reclamos %}
+		<div style="background: white; border-radius: 12px; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
+			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0;">
+				{% for r in reclamos|slice:":6" %}
+				<div style="padding: 20px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+					<div style="font-weight: 700; color: var(--dark); margin-bottom: 8px;">Reclamo #{{ r.id_reclamo }}</div>
+					<div style="color: var(--text); font-size: 0.9rem; margin-bottom: 12px; line-height: 1.5;">
+						{{ r.descripcion|truncatechars:50 }}
+					</div>
+					<span style="display: inline-block; padding: 4px 10px; background: #fff3cd; color: #856404; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+						{{ r.estado }}
+					</span>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		<a href="{% url 'reclamos_mis' %}" class="btn btn-secondary" style="display: inline-block; margin-top: 20px;">Ver Todos los Reclamos</a>
+	{% else %}
+		<div class="empty-state">
+			<div class="empty-icon">✓</div>
+			<h3>¡Sin reclamos!</h3>
+			<p>Esperamos que disfrutes nuestros productos</p>
+		</div>
+	{% endif %}
+
+{% else %}
+	<div class="empty-state">
+		<div class="empty-icon">⚠️</div>
+		<h2>Información no disponible</h2>
+		<p>No hay datos de cliente asociados a este usuario.</p>
+		<a href="{% url 'index' %}" class="btn btn-primary" style="display: inline-block; margin-top: 15px;">Volver al Inicio</a>
+	</div>
+{% endif %}
+
+{% endblock %}

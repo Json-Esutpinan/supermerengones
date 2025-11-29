@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Estadísticas Proveedor{% endblock title %}
+{% block content %}
+<h2>Estadísticas de Proveedor</h2>
+<form method="post">{% csrf_token %}
+    <label>ID Proveedor:<br><input name="id_proveedor" required></label><br>
+    <button>Consultar</button>
+</form>
+{% if resultado %}
+    <h3>Resultado</h3>
+    {% if resultado.success %}
+        <p>{{ resultado.message }}</p>
+        <ul>
+            <li>Total Compras: {{ resultado.data.total_compras }}</li>
+            <li>Monto Total: {{ resultado.data.monto_total }}</li>
+            <li>Última Compra: {{ resultado.data.ultima_compra }}</li>
+        </ul>
+        <h4>Compras Recientes</h4>
+        <pre>{{ resultado.data.compras_recientes|safe }}</pre>
+    {% else %}
+        <p>Error: {{ resultado.message }}</p>
+    {% endif %}
+{% endif %}
+{% endblock content %}

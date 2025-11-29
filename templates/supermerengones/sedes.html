@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Sedes | Super Merengones{% endblock title %}
+
+{% block content %}
+<style>
+	.sedes-header {
+		background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+		color: white;
+		padding: 50px 20px;
+		border-radius: 12px;
+		margin-bottom: 40px;
+		text-align: center;
+	}
+
+	.sedes-header h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2.5rem;
+		margin-bottom: 10px;
+	}
+
+	.sedes-header p {
+		font-size: 1.1rem;
+		opacity: 0.95;
+	}
+
+	.sedes-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+		gap: 30px;
+		margin-bottom: 40px;
+	}
+
+	.sede-card {
+		background: white;
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+		transition: all 0.3s ease;
+		border-left: 5px solid var(--primary);
+	}
+
+	.sede-card:hover {
+		transform: translateY(-8px);
+		box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+	}
+
+	.sede-header-section {
+		background: linear-gradient(135deg, #f5e6eb 0%, #ffe6f0 100%);
+		padding: 30px 20px;
+		text-align: center;
+	}
+
+	.sede-icon {
+		font-size: 3rem;
+		margin-bottom: 10px;
+	}
+
+	.sede-name {
+		font-family: 'Playfair Display', serif;
+		font-size: 1.5rem;
+		color: var(--dark);
+		margin-bottom: 10px;
+		font-weight: 700;
+	}
+
+	.sede-status {
+		display: inline-block;
+		padding: 6px 12px;
+		border-radius: 20px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		background: #d4edda;
+		color: #155724;
+	}
+
+	.sede-status.inactive {
+		background: #f8d7da;
+		color: #721c24;
+	}
+
+	.sede-content {
+		padding: 25px;
+	}
+
+	.sede-info-row {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		margin-bottom: 18px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.sede-info-row:last-child {
+		border-bottom: none;
+		margin-bottom: 0;
+	}
+
+	.sede-info-icon {
+		font-size: 1.3rem;
+		min-width: 25px;
+		color: var(--primary);
+	}
+
+	.sede-info-text {
+		flex: 1;
+	}
+
+	.sede-info-label {
+		font-weight: 700;
+		color: var(--dark);
+		display: block;
+		margin-bottom: 4px;
+	}
+
+	.sede-info-value {
+		color: var(--text);
+		font-size: 0.95rem;
+	}
+
+	.sede-actions {
+		display: flex;
+		gap: 10px;
+		margin-top: 20px;
+	}
+
+	.sede-actions .btn {
+		flex: 1;
+		text-align: center;
+		padding: 10px;
+		font-size: 0.9rem;
+	}
+
+	.empty-sedes {
+		text-align: center;
+		padding: 80px 20px;
+		background: white;
+		border-radius: 12px;
+	}
+
+	.empty-sedes-icon {
+		font-size: 4rem;
+		margin-bottom: 20px;
+	}
+
+	.empty-sedes h2 {
+		color: var(--dark);
+		margin-bottom: 10px;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.sedes-header h1 {
+			font-size: 1.8rem;
+		}
+
+		.sedes-grid {
+			grid-template-columns: 1fr;
+			gap: 20px;
+		}
+
+		.sede-actions {
+			flex-direction: column;
+		}
+
+		.sede-actions .btn {
+			width: 100%;
+		}
+	}
+</style>
+
+<div class="sedes-header">
+	<h1>📍 Nuestras Sedes</h1>
+	<p>Visítanos en cualquiera de nuestras ubicaciones en la ciudad</p>
+</div>
+
+{% if sedes %}
+	<div class="sedes-grid">
+		{% for s in sedes %}
+		<div class="sede-card">
+			<div class="sede-header-section">
+				<div class="sede-icon">🏪</div>
+				<h2 class="sede-name">{{ s.nombre }}</h2>
+				<span class="sede-status {% if not s.activo %}inactive{% endif %}">
+					{% if s.activo %}✓ Abierto{% else %}⊗ Cerrado{% endif %}
+				</span>
+			</div>
+
+			<div class="sede-content">
+				{% if s.direccion %}
+				<div class="sede-info-row">
+					<span class="sede-info-icon">📬</span>
+					<div class="sede-info-text">
+						<span class="sede-info-label">Dirección</span>
+						<span class="sede-info-value">{{ s.direccion }}</span>
+					</div>
+				</div>
+				{% endif %}
+
+				{% if s.telefono %}
+				<div class="sede-info-row">
+					<span class="sede-info-icon">📞</span>
+					<div class="sede-info-text">
+						<span class="sede-info-label">Teléfono</span>
+						<span class="sede-info-value">
+							<a href="tel:{{ s.telefono }}" style="color: var(--primary); text-decoration: none; font-weight: 600;">{{ s.telefono }}</a>
+						</span>
+					</div>
+				</div>
+				{% endif %}
+
+				<div class="sede-info-row">
+					<span class="sede-info-icon">🕒</span>
+					<div class="sede-info-text">
+						<span class="sede-info-label">Horario</span>
+						<span class="sede-info-value">Lun-Dom: 9:00 AM - 8:00 PM</span>
+					</div>
+				</div>
+
+				<div class="sede-actions">
+					<a href="{% url 'productos' %}" class="btn btn-primary">Hacer Pedido</a>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+	<div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 8px; padding: 20px; color: #0c5460; text-align: center; margin-top: 40px;">
+		<strong>💡 Consejo:</strong> Llama a tu sede más cercana para consultar disponibilidad de productos y promociones especiales
+	</div>
+
+{% else %}
+	<div class="empty-sedes">
+		<div class="empty-sedes-icon">🏪</div>
+		<h2>No hay sedes registradas</h2>
+		<p>Estamos trabajando para abrir nuevas ubicaciones pronto</p>
+		<a href="{% url 'index' %}" class="btn btn-primary" style="display: inline-block; margin-top: 20px;">Volver al Inicio</a>
+	</div>
+{% endif %}
+
+{% endblock content %}

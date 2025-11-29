@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Página No Encontrada{% endblock title %}
+{% block content %}
+<style>
+	.error-container {
+		max-width: 600px;
+		margin: 80px auto;
+		text-align: center;
+		padding: 40px;
+		background: white;
+		border-radius: 12px;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+	}
+
+	.error-code {
+		font-size: 5rem;
+		font-weight: 700;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-bottom: 20px;
+	}
+
+	.error-title {
+		font-family: 'Playfair Display', serif;
+		font-size: 2rem;
+		color: var(--dark);
+		margin-bottom: 15px;
+	}
+
+	.error-message {
+		color: var(--text);
+		font-size: 1.1rem;
+		line-height: 1.6;
+		margin-bottom: 30px;
+	}
+
+	.error-actions {
+		display: flex;
+		gap: 15px;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+
+	.error-icon {
+		font-size: 4rem;
+		margin-bottom: 20px;
+	}
+</style>
+
+<div class="error-container">
+	<div class="error-icon">🔍</div>
+	<div class="error-code">404</div>
+	<h1 class="error-title">Página No Encontrada</h1>
+	<p class="error-message">
+		Lo sentimos, la página que buscas no existe o ha sido movida.
+		<br><br>
+		Verifica la URL e intenta nuevamente, o navega a través del menú principal.
+	</p>
+	<div class="error-actions">
+		<a href="{% url 'index' %}" class="btn btn-primary">Ir al Inicio</a>
+		<a href="{% url 'productos' %}" class="btn btn-secondary">Ver Productos</a>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Crear Reclamo{% endblock title %}
+{% block content %}
+<h2>Crear Reclamo</h2>
+<form method="post">{% csrf_token %}
+    <label>Id Pedido:<br><input name="id_pedido" required></label><br>
+    <label>Descripción:<br><textarea name="descripcion" rows="5" required></textarea></label><br>
+    <button type="submit">Enviar</button>
+</form>
+{% endblock content %}

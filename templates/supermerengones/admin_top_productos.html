@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Top Productos{% endblock title %}
+{% block content %}
+<h2>Top Productos</h2>
+<p>Lista agregada por cantidad vendida y subtotal.</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Cantidad Total</th>
+      <th>Subtotal Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.id_producto }}</td>
+      <td>{{ r.nombre }}</td>
+      <td>{{ r.cantidad_total }}</td>
+      <td>${{ r.subtotal_total|floatformat:2 }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Sin datos</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<a class="button-secondary" href="{% url 'admin_panel' %}">Volver</a>
+{% endblock content %}

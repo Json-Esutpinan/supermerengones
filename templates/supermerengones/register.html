@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Registro | Super Merengones{% endblock title %}
+
+{% block content %}
+<style>
+	.register-container {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 40px;
+		max-width: 1000px;
+		margin: 40px auto;
+		padding: 0 20px;
+		align-items: flex-start;
+	}
+
+	.register-banner {
+		background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+		color: white;
+		padding: 50px 40px;
+		border-radius: 12px;
+	}
+
+	.register-banner h2 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2rem;
+		margin-bottom: 20px;
+	}
+
+	.register-banner p {
+		font-size: 1rem;
+		line-height: 1.6;
+		margin-bottom: 25px;
+		opacity: 0.95;
+	}
+
+	.register-banner-icon {
+		font-size: 4rem;
+		margin-bottom: 20px;
+	}
+
+	.benefits-list {
+		list-style: none;
+		margin-top: 30px;
+	}
+
+	.benefits-list li {
+		padding: 10px 0;
+		border-bottom: 1px solid rgba(255,255,255,0.2);
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.benefits-list li:last-child {
+		border-bottom: none;
+	}
+
+	.register-form-card {
+		background: white;
+		padding: 40px;
+		border-radius: 12px;
+		box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+	}
+
+	.register-form-card h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 1.8rem;
+		color: var(--dark);
+		margin-bottom: 10px;
+	}
+
+	.register-form-card > p {
+		color: var(--text);
+		margin-bottom: 30px;
+		font-size: 0.95rem;
+	}
+
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+	.form-group label {
+		display: block;
+		font-weight: 600;
+		color: var(--dark);
+		margin-bottom: 8px;
+		font-size: 0.95rem;
+	}
+
+	.form-group input,
+	.form-group select {
+		width: 100%;
+		padding: 12px 14px;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		font-family: 'Inter', sans-serif;
+		font-size: 0.95rem;
+		transition: all 0.3s ease;
+	}
+
+	.form-group input:focus,
+	.form-group select:focus {
+		outline: none;
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px rgba(231, 84, 128, 0.1);
+	}
+
+	.form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 15px;
+	}
+
+	.register-button {
+		width: 100%;
+		padding: 12px;
+		background: var(--primary);
+		color: white;
+		border: none;
+		border-radius: 6px;
+		font-weight: 700;
+		font-size: 0.95rem;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		margin-top: 10px;
+	}
+
+	.register-button:hover {
+		background: var(--primary-dark);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(231, 84, 128, 0.3);
+	}
+
+	.register-footer {
+		text-align: center;
+		margin-top: 25px;
+		padding-top: 20px;
+		border-top: 1px solid var(--border);
+	}
+
+	.register-footer p {
+		color: var(--text);
+		font-size: 0.95rem;
+	}
+
+	.register-footer a {
+		color: var(--primary);
+		text-decoration: none;
+		font-weight: 600;
+		transition: color 0.3s ease;
+	}
+
+	.register-footer a:hover {
+		color: var(--primary-dark);
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.register-container {
+			grid-template-columns: 1fr;
+			gap: 20px;
+		}
+
+		.register-banner {
+			padding: 35px 20px;
+			order: -1;
+		}
+
+		.register-banner h2 {
+			font-size: 1.5rem;
+		}
+
+		.register-form-card {
+			padding: 30px;
+		}
+
+		.register-form-card h1 {
+			font-size: 1.5rem;
+		}
+
+		.form-row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<div class="register-container">
+	<div class="register-banner">
+		<div class="register-banner-icon">🎉</div>
+		<h2>¡Únete a la Familia!</h2>
+		<p>Regístrate en Super Merengones y disfruta de los mejores merengones artesanales con acceso a ofertas exclusivas.</p>
+		
+		<ul class="benefits-list">
+			<li><span>✓</span> Compra en línea de forma segura</li>
+			<li><span>✓</span> Acceso a promociones exclusivas</li>
+			<li><span>✓</span> Historial de tus pedidos</li>
+			<li><span>✓</span> Notificaciones de nuevas ofertas</li>
+			<li><span>✓</span> Entrega rápida en nuestras sedes</li>
+		</ul>
+	</div>
+
+	<div class="register-form-card">
+		<h1>Crear Cuenta</h1>
+		<p>Completa el formulario para comenzar</p>
+
+		<form method="post" action="{% url 'register' %}">
+			{% csrf_token %}
+
+			<div class="form-group">
+				<label for="name">👤 Nombre Completo <span style="color: var(--danger);">*</span></label>
+				<input id="name" name="name" type="text" placeholder="Juan Pérez" required>
+			</div>
+
+			<div class="form-group">
+				<label for="email">📧 Email <span style="color: var(--danger);">*</span></label>
+				<input id="email" name="email" type="email" placeholder="tu@email.com" required>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label for="telefono">📱 Teléfono</label>
+					<input id="telefono" name="telefono" type="tel" placeholder="(555) 123-4567">
+				</div>
+
+				<div class="form-group">
+					<label for="password">🔐 Contraseña <span style="color: var(--danger);">*</span></label>
+					<input id="password" name="password" type="password" placeholder="Elige una contraseña segura" required>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="direccion">🏠 Dirección</label>
+				<input id="direccion" name="direccion" type="text" placeholder="Calle Principal 123">
+			</div>
+
+			<button type="submit" class="register-button">Crear Mi Cuenta</button>
+		</form>
+
+		<div class="register-footer">
+			<p>¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+		</div>
+	</div>
+</div>
+
+<div style="max-width: 1000px; margin: 60px auto 0; padding: 0 20px;">
+	<div style="background: linear-gradient(135deg, #f5e6eb 0%, #ffe6f0 100%); padding: 30px; border-radius: 12px; text-align: center; color: var(--dark);">
+		<strong>🎁 Promoción:</strong> Completa tu registro y recibe un descuento especial en tu primer pedido. ¡Válido por 7 días!
+	</div>
+</div>
+
+{% endblock content %}

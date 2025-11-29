@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Asistencia Hoy{% endblock %}
+{% block content %}
+<h2>Asistencia del Día {{ fecha }}</h2>
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th>Empleado</th>
+      <th>Entrada</th>
+      <th>Salida</th>
+      <th>Estado</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in registros %}
+    <tr>
+      <td>{{ r.empleado.usuario.nombre|default:r.empleado.id_empleado }}</td>
+      <td>{{ r.hora_entrada|default:'—' }}</td>
+      <td>{{ r.hora_salida|default:'—' }}</td>
+      <td>{{ r.estado }}</td>
+      <td>
+        <form method="post" action="{% url 'asistencia_actualizar_estado' r.id_asistencia %}" style="display:inline-flex;gap:4px;align-items:center;">
+          {% csrf_token %}
+          <select name="estado" class="form-select form-select-sm">
+            <option value="asistio" {% if r.estado == 'asistio' %}selected{% endif %}>Asistió</option>
+            <option value="falta" {% if r.estado == 'falta' %}selected{% endif %}>Falta</option>
+            <option value="tardanza" {% if r.estado == 'tardanza' %}selected{% endif %}>Tardanza</option>
+            <option value="justificado" {% if r.estado == 'justificado' %}selected{% endif %}>Justificado</option>
+            <option value="pendiente" {% if r.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+          </select>
+          <input type="text" name="observaciones" placeholder="Obs" class="form-control form-control-sm" style="width:120px;" />
+          <button class="btn btn-sm btn-primary">Actualizar</button>
+        </form>
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">Sin registros hoy.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

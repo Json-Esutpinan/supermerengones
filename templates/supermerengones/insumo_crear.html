@@ -1,0 +1,38 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Crear Insumo{% endblock %}
+{% block content %}
+<h2>Crear Insumo</h2>
+<form method="post">{% csrf_token %}
+  <div class="mb-2">
+    <label>Código</label>
+    <input type="text" name="codigo" class="form-control" required>
+  </div>
+  <div class="mb-2">
+    <label>Nombre</label>
+    <input type="text" name="nombre" class="form-control" required>
+  </div>
+  <div class="mb-2">
+    <label>Descripción</label>
+    <textarea name="descripcion" class="form-control" rows="3"></textarea>
+  </div>
+  <div class="mb-2">
+    <label>ID Unidad</label>
+    <input type="text" name="id_unidad" class="form-control">
+  </div>
+  <div class="mb-2">
+    <label>Sede</label>
+    <select name="id_sede" class="form-select" required>
+      <option value="">--Seleccione--</option>
+      {% for s in sedes %}
+        <option value="{{ s.id_sede }}">{{ s.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-2">
+    <label>Stock mínimo</label>
+    <input type="number" name="stock_minimo" class="form-control" value="0" required>
+  </div>
+  <button class="btn btn-success" type="submit">Crear</button>
+  <a href="{% url 'insumos_admin_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

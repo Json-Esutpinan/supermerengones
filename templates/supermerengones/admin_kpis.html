@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}KPIs{% endblock title %}
+{% block content %}
+<h2>KPIs Administrativos</h2>
+
+<section>
+    <h3>Pedidos por Estado (Total: {{ total_pedidos }})</h3>
+    <ul>
+        {% for estado, count in pedidos_por_estado.items %}
+            <li>{{ estado }}: {{ count }}</li>
+        {% empty %}<li>Sin pedidos registrados</li>{% endfor %}
+    </ul>
+</section>
+
+<section>
+    <h3>Top Productos</h3>
+    {% if top_productos %}
+        <ol>
+            {% for prod in top_productos %}
+                <li>{{ prod.nombre }} ({{ prod.cantidad_total }})</li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>{{ top_productos_msg }}</p>
+    {% endif %}
+</section>
+
+<section>
+    <h3>Insumos Críticos</h3>
+    <ul>
+        {% for a in insumos_criticos %}
+            <li>Insumo {{ a.id_insumo }} en sede {{ a.id_sede }}: {{ a.cantidad_actual }} unidades ({{ a.nivel }})</li>
+        {% empty %}<li>No hay insumos críticos</li>{% endfor %}
+    </ul>
+</section>
+
+<section>
+    <h3>Compras Recientes</h3>
+    <ul>
+        {% for c in compras_recientes %}
+            <li>Compra {{ c.id_compra }} - Proveedor {{ c.id_proveedor }} - Total {{ c.total }} - Estado {{ c.estado }}</li>
+        {% empty %}<li>No hay compras recientes</li>{% endfor %}
+    </ul>
+</section>
+
+{% endblock content %}

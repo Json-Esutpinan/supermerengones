@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Reclamos{% endblock title %}
+{% block content %}
+<h2>Todos los Reclamos</h2>
+<table>
+    <thead><tr><th>ID</th><th>Pedido</th><th>Cliente</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+    {% for r in reclamos %}
+        <tr>
+            <td>{{ r.id_reclamo }}</td>
+            <td>{{ r.id_pedido }}</td>
+            <td>{{ r.id_cliente }}</td>
+            <td>{{ r.estado }}</td>
+            <td>
+                <form method="post" action="{% url 'reclamo_resolver_ui' r.id_reclamo %}" style="display:inline;">{% csrf_token %}<input name="respuesta" placeholder="Respuesta opcional"><button>Resolver</button></form>
+                <form method="post" action="{% url 'reclamo_rechazar_ui' r.id_reclamo %}" style="display:inline;">{% csrf_token %}<input name="razon" placeholder="Razón opcional"><button>Rechazar</button></form>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="5">Sin reclamos</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Auditoría de Logs{% endblock title %}
+{% block content %}
+<div class="container">
+  <h2>Auditoría de Logs</h2>
+  {% if not configured %}
+    <div class="alert">{{ message }}</div>
+    <p>Configure la variable de entorno <code>APP_LOG_FILE</code> para habilitar el registro a archivo. Ejemplo:</p>
+    <pre>APP_LOG_FILE=/var/log/supermerengones/structured.log</pre>
+  {% else %}
+    <form method="get" class="card" style="margin-bottom:16px; padding:12px;">
+      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+        <div>
+          <label>Evento</label>
+          <input type="text" name="event" value="{{ filters.event }}" placeholder="login, pedido_creado, ..." />
+        </div>
+        <div>
+          <label>Éxito</label>
+          <select name="success">
+            <option value="" {% if not filters.success %}selected{% endif %}>Cualquiera</option>
+            <option value="true" {% if filters.success == 'true' %}selected{% endif %}>true</option>
+            <option value="false" {% if filters.success == 'false' %}selected{% endif %}>false</option>
+          </select>
+        </div>
+        <div>
+          <label>Desde</label>
+          <input type="date" name="desde" value="{{ filters.desde }}" />
+        </div>
+        <div>
+          <label>Hasta</label>
+          <input type="date" name="hasta" value="{{ filters.hasta }}" />
+        </div>
+        <div>
+          <label>Límite</label>
+          <select name="limit">
+            <option value="50" {% if filters.limit == 50 %}selected{% endif %}>50</option>
+            <option value="100" {% if filters.limit == 100 %}selected{% endif %}>100</option>
+            <option value="200" {% if filters.limit == 200 %}selected{% endif %}>200</option>
+            <option value="500" {% if filters.limit == 500 %}selected{% endif %}>500</option>
+            <option value="1000" {% if filters.limit == 1000 %}selected{% endif %}>1000</option>
+          </select>
+        </div>
+        <div>
+          <button type="submit" class="button-primary">Filtrar</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="card" style="overflow:auto;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="min-width:160px;">Timestamp</th>
+            <th>Evento</th>
+            <th>Éxito</th>
+            <th>Detalles</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in entries %}
+            <tr>
+              <td><code>{{ e.ts }}</code></td>
+              <td><strong>{{ e.event }}</strong></td>
+              <td>
+                {% if e.success is not None %}
+                  {% if e.success %}<span style="color:#0a0;">true</span>{% else %}<span style="color:#a00;">false</span>{% endif %}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>
+                <details>
+                  <summary>Ver</summary>
+                  <pre style="white-space:pre-wrap;">{{ e|safe }}</pre>
+                </details>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4">No se encontraron entradas con los filtros aplicados.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>
+{% endblock content %}

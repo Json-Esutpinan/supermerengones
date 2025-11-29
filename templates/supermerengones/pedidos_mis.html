@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% block title %}Mis Pedidos{% endblock title %}
+{% load humanize %}
+{% block content %}
+<style>
+	.my-orders-header {
+		background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+		color: white;
+		padding: 40px 20px;
+		border-radius: 12px;
+		margin-bottom: 40px;
+		text-align: center;
+	}
+
+	.my-orders-header h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2.2rem;
+		margin-bottom: 10px;
+	}
+
+	.orders-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+		gap: 25px;
+		margin-bottom: 40px;
+	}
+
+	.order-card {
+		background: white;
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+		transition: all 0.3s ease;
+	}
+
+	.order-card:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+	}
+
+	.order-header {
+		background: linear-gradient(135deg, #f5e6eb 0%, #ffe6f0 100%);
+		padding: 20px;
+		border-bottom: 2px solid var(--border);
+	}
+
+	.order-id {
+		font-weight: 700;
+		color: var(--dark);
+		font-size: 1.1rem;
+		margin-bottom: 5px;
+	}
+
+	.order-date {
+		font-size: 0.9rem;
+		color: var(--text);
+	}
+
+	.order-content {
+		padding: 20px;
+	}
+
+	.order-meta {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 15px;
+		padding-bottom: 15px;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.order-status {
+		display: inline-block;
+		padding: 6px 12px;
+		border-radius: 20px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		background: #d4edda;
+		color: #155724;
+	}
+
+	.order-status.pending {
+		background: #fff3cd;
+		color: #856404;
+	}
+
+	.order-status.processing {
+		background: #d1ecf1;
+		color: #0c5460;
+	}
+
+	.order-status.delivered {
+		background: #d4edda;
+		color: #155724;
+	}
+
+	.order-status.cancelled {
+		background: #f8d7da;
+		color: #721c24;
+	}
+
+	.order-total {
+		font-size: 1.4rem;
+		font-weight: 700;
+		color: var(--primary);
+	}
+
+	.order-details {
+		font-size: 0.9rem;
+		color: var(--text);
+		margin-bottom: 15px;
+		padding-bottom: 15px;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.order-details p {
+		margin-bottom: 8px;
+	}
+
+	.order-actions {
+		display: flex;
+		gap: 10px;
+	}
+
+	.order-actions .btn {
+		flex: 1;
+		text-align: center;
+		padding: 10px;
+		font-size: 0.9rem;
+	}
+
+	.empty-orders {
+		text-align: center;
+		padding: 80px 20px;
+		background: white;
+		border-radius: 12px;
+	}
+
+	.empty-orders-icon {
+		font-size: 4rem;
+		margin-bottom: 20px;
+	}
+
+	.empty-orders h2 {
+		color: var(--dark);
+		margin-bottom: 10px;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.my-orders-header h1 {
+			font-size: 1.8rem;
+		}
+
+		.orders-grid {
+			grid-template-columns: 1fr;
+			gap: 20px;
+		}
+
+		.order-meta {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 10px;
+		}
+
+		.order-actions {
+			flex-direction: column;
+		}
+	}
+</style>
+
+<div class="my-orders-header">
+	<h1>📦 Mis Pedidos</h1>
+	<p>Visualiza el estado de todos tus pedidos</p>
+</div>
+
+{% if pedidos %}
+	<div class="orders-grid">
+		{% for p in pedidos %}
+		<div class="order-card">
+			<div class="order-header">
+				<div class="order-id">Pedido #{{ p.id_pedido }}</div>
+				<div class="order-date">📅 {{ p.fecha|date:"d/m/Y H:i" }}</div>
+			</div>
+
+			<div class="order-content">
+				<div class="order-meta">
+					<span class="order-status {% if 'pendiente' in p.estado|lower %}pending{% elif 'procesamiento' in p.estado|lower %}processing{% elif 'entregado' in p.estado|lower %}delivered{% elif 'cancelado' in p.estado|lower %}cancelled{% endif %}">
+						{{ p.estado }}
+					</span>
+				</div>
+
+				<div class="order-details">
+					<p><strong>Monto Total:</strong></p>
+					<div class="order-total">${{ p.total|default:0|intcomma }}</div>
+				</div>
+
+				<div class="order-details">
+					<p><strong>📍 Entrega:</strong> A domicilio</p>
+					<p><strong>🕒 Estimado:</strong> 2-3 días hábiles</p>
+				</div>
+
+				<div class="order-actions">
+					<a href="{% url 'pedido_detalle' p.id_pedido %}" class="btn btn-primary">Ver Detalles</a>
+					<a href="{% url 'pedidos_mis' %}" class="btn btn-secondary">Seguimiento</a>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+	<div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 8px; padding: 20px; color: #0c5460; text-align: center;">
+		<strong>💡 Nota:</strong> Puedes ver el detalle completo de tu pedido haciendo clic en "Ver Detalles"
+	</div>
+
+{% else %}
+	<div class="empty-orders">
+		<div class="empty-orders-icon">📦</div>
+		<h2>Aún no tienes pedidos</h2>
+		<p>¡Comienza a disfrutar nuestros deliciosos merengones!</p>
+		<a href="{% url 'productos' %}" class="btn btn-primary" style="display: inline-block; margin-top: 20px;">Explorar Productos</a>
+	</div>
+{% endif %}
+
+{% endblock content %}

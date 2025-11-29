@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión | Super Merengones{% endblock title %}
+
+{% block content %}
+<style>
+	.login-container {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 40px;
+		max-width: 1000px;
+		margin: 40px auto;
+		padding: 0 20px;
+		align-items: center;
+	}
+
+	.login-banner {
+		background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+		color: white;
+		padding: 60px 40px;
+		border-radius: 12px;
+		text-align: center;
+	}
+
+	.login-banner h2 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2.2rem;
+		margin-bottom: 20px;
+	}
+
+	.login-banner p {
+		font-size: 1.05rem;
+		line-height: 1.6;
+		margin-bottom: 25px;
+		opacity: 0.95;
+	}
+
+	.login-banner-icon {
+		font-size: 5rem;
+		margin-bottom: 20px;
+	}
+
+	.login-form-card {
+		background: white;
+		padding: 40px;
+		border-radius: 12px;
+		box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+	}
+
+	.login-form-card h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 1.8rem;
+		color: var(--dark);
+		margin-bottom: 10px;
+	}
+
+	.login-form-card > p {
+		color: var(--text);
+		margin-bottom: 30px;
+		font-size: 0.95rem;
+	}
+
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+	.form-group label {
+		display: block;
+		font-weight: 600;
+		color: var(--dark);
+		margin-bottom: 8px;
+		font-size: 0.95rem;
+	}
+
+	.form-group input {
+		width: 100%;
+		padding: 12px 14px;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		font-family: 'Inter', sans-serif;
+		font-size: 0.95rem;
+		transition: all 0.3s ease;
+	}
+
+	.form-group input:focus {
+		outline: none;
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px rgba(231, 84, 128, 0.1);
+	}
+
+	.login-button {
+		width: 100%;
+		padding: 12px;
+		background: var(--primary);
+		color: white;
+		border: none;
+		border-radius: 6px;
+		font-weight: 700;
+		font-size: 0.95rem;
+		cursor: pointer;
+		transition: all 0.3s ease;
+	}
+
+	.login-button:hover {
+		background: var(--primary-dark);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(231, 84, 128, 0.3);
+	}
+
+	.login-footer {
+		text-align: center;
+		margin-top: 25px;
+		padding-top: 20px;
+		border-top: 1px solid var(--border);
+	}
+
+	.login-footer p {
+		color: var(--text);
+		font-size: 0.95rem;
+		margin-bottom: 15px;
+	}
+
+	.login-footer a {
+		color: var(--primary);
+		text-decoration: none;
+		font-weight: 600;
+		transition: color 0.3s ease;
+	}
+
+	.login-footer a:hover {
+		color: var(--primary-dark);
+	}
+
+	.register-cta {
+		display: inline-block;
+		width: 100%;
+		padding: 12px;
+		background: var(--light);
+		color: var(--primary);
+		border: 2px solid var(--primary);
+		border-radius: 6px;
+		text-align: center;
+		text-decoration: none;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		margin-top: 10px;
+	}
+
+	.register-cta:hover {
+		background: var(--primary);
+		color: white;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.login-container {
+			grid-template-columns: 1fr;
+			gap: 20px;
+		}
+
+		.login-banner {
+			padding: 40px 20px;
+			order: -1;
+		}
+
+		.login-banner h2 {
+			font-size: 1.5rem;
+		}
+
+		.login-form-card {
+			padding: 30px;
+		}
+
+		.login-form-card h1 {
+			font-size: 1.5rem;
+		}
+	}
+</style>
+
+<div class="login-container">
+	<div class="login-banner">
+		<div class="login-banner-icon">🍰</div>
+		<h2>¡Bienvenido!</h2>
+		<p>Accede a tu cuenta de Super Merengones para disfrutar de ofertas exclusivas, seguimiento de pedidos y más.</p>
+		<div style="margin-top: 30px; color: white; opacity: 0.9;">
+			<p>✓ Compra rápida y segura</p>
+			<p>✓ Historial de pedidos</p>
+			<p>✓ Ofertas exclusivas</p>
+		</div>
+	</div>
+
+	<div class="login-form-card">
+		<h1>Inicia Sesión</h1>
+		<p>Ingresa tus credenciales para continuar</p>
+
+		<form method="post" action="{% url 'login' %}">
+			{% csrf_token %}
+			<input type="hidden" name="next" value="{{ request.GET.next }}">
+
+			<div class="form-group">
+				<label for="email">📧 Email</label>
+				<input id="email" name="email" type="email" placeholder="tu@email.com" required>
+			</div>
+
+			<div class="form-group">
+				<label for="password">🔐 Contraseña</label>
+				<input id="password" name="password" type="password" placeholder="Tu contraseña segura" required>
+			</div>
+
+			<button type="submit" class="login-button">Inicia Sesión</button>
+		</form>
+
+		<div class="login-footer">
+			<p>¿No tienes cuenta?</p>
+			<a href="{% url 'register' %}" class="register-cta">Crear Cuenta Nueva</a>
+			<p style="margin-top: 15px; font-size: 0.85rem;">
+				<a href="#forgot-password" style="color: var(--text); text-decoration: underline;">¿Olvidaste tu contraseña?</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<div style="max-width: 1000px; margin: 60px auto 0; padding: 0 20px;">
+	<div style="background: linear-gradient(135deg, #f5e6eb 0%, #ffe6f0 100%); padding: 30px; border-radius: 12px; text-align: center; color: var(--dark);">
+		<strong>💡 Consejo:</strong> Si aún no tienes cuenta, regístrate ahora y recibe un descuento especial en tu primer compra.
+	</div>
+</div>
+
+{% endblock content %}

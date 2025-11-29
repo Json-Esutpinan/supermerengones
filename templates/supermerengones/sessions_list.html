@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Sesiones{% endblock %}
+{% block content %}
+<h2>Sesión Actual</h2>
+<table class="table table-sm">
+  <tr><th>Session Key</th><td>{{ session_info.session_key }}</td></tr>
+  <tr><th>Expira</th><td>{{ session_info.expira }}</td></tr>
+  <tr><th>Rol</th><td>{{ session_info.rol }}</td></tr>
+  <tr><th>Empleado ID</th><td>{{ session_info.id_empleado|default:'—' }}</td></tr>
+  <tr><th>Cliente ID</th><td>{{ session_info.id_cliente|default:'—' }}</td></tr>
+</table>
+<p class="text-muted">Listado de múltiples sesiones pendiente (requiere backend adicional).</p>
+{% endblock %}

@@ -1,0 +1,335 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Super Merengones{% endblock title %}</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #E75480;
+            --primary-light: #FF6B9D;
+            --primary-dark: #C73860;
+        }
+
+        .main-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .site-logo {
+            height: 45px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .brand-row h1 {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 1.8rem;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .main-nav {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0;
+            padding: 0 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .main-nav::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .main-nav::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .nav-item {
+            display: inline-block;
+            padding: 14px 14px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(231, 84, 128, 0.05);
+        }
+
+        .nav-item.button-primary,
+        .nav-item.button-secondary {
+            border-bottom: none;
+            border-radius: 6px;
+            margin: 8px 6px;
+            padding: 10px 16px;
+        }
+
+        .nav-item.button-primary {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .nav-item.button-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 84, 128, 0.3);
+        }
+
+        .nav-item.button-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item.button-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .auth-links {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-left: auto;
+            padding: 0;
+        }
+
+        .auth-links .nav-item {
+            padding: 14px 12px;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            padding: 10px 15px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+                order: -1;
+            }
+
+            .brand-row {
+                border-radius: 0;
+                padding: 10px 15px;
+            }
+
+            .brand-row h1 {
+                font-size: 1.4rem;
+            }
+
+            .main-nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                max-width: none;
+                padding: 0;
+                overflow: visible;
+                background: #f9f9f9;
+            }
+
+            .main-header.nav-open .main-nav {
+                display: flex;
+            }
+
+            .nav-item {
+                display: block;
+                width: 100%;
+                padding: 12px 15px;
+                text-align: left;
+                border-bottom: 1px solid #e0e0e0;
+                border-right: none;
+            }
+
+            .nav-item:hover {
+                background: #f5f5f5;
+            }
+
+            .auth-links {
+                flex-direction: column;
+                margin-left: 0;
+                width: 100%;
+                padding: 0;
+                border-top: 1px solid #e0e0e0;
+            }
+
+            .auth-links .nav-item {
+                padding: 12px 15px;
+            }
+
+            .nav-item.button-primary,
+            .nav-item.button-secondary {
+                margin: 4px 15px;
+                border-radius: 6px;
+                width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+            <div class="logo-container brand-row">
+                <img src="{% static 'images/logo.svg' %}" alt="Super Merengones" class="site-logo">
+                <h1>Super Merengones</h1>
+            </div>
+        <button class="nav-toggle" aria-label="Abrir menú" onclick="document.querySelector('.main-header').classList.toggle('nav-open')">☰</button>
+        <nav class="main-nav">
+            <a href="{% url 'index' %}" class="nav-item">Inicio</a>
+            <a href="{% url 'productos' %}" class="nav-item">Productos</a>
+            <a href="{% url 'promociones' %}" class="nav-item">Promociones</a>
+            <a href="{% url 'sedes' %}" class="nav-item">Nuestras Sedes</a>
+            <a href="{% url 'carrito' %}" class="nav-item">Carrito</a>
+            {% if request.user.is_authenticated and request.session.user_rol == 'cliente' %}
+                <a href="{% url 'notificaciones_cliente' %}" class="nav-item">Notificaciones{% if notif_unread and notif_unread > 0 %} <span class="badge" style="background:#dc3545;color:#fff;border-radius:12px;padding:2px 8px;">{{ notif_unread }}</span>{% endif %}</a>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'reclamos_mis' %}" class="nav-item">Mis Reclamos</a>
+                <a href="{% url 'pedidos_mis' %}" class="nav-item">Mis Pedidos</a>
+                {% if request.session.user_rol == 'cliente' %}
+                    <a href="{% url 'perfil_usuario' %}" class="nav-item">Mi Perfil</a>
+                    <a href="{% url 'perfil_editar' %}" class="nav-item">Editar Perfil</a>
+                    <a href="{% url 'password_change' %}" class="nav-item">Cambiar Contraseña</a>
+                {% endif %}
+                {% if request.session.user_rol == 'empleado' or request.session.user_rol == 'administrador' %}
+                    <a href="{% url 'pedidos_todos' %}" class="nav-item">Pedidos</a>
+                    <a href="{% url 'producto_disponibilidad' %}" class="nav-item">Disp. Producto</a>
+                    <a href="{% url 'inventario_verificar' %}" class="nav-item">Stock Insumo</a>
+                    <a href="{% url 'productos_admin_list' %}" class="nav-item">Productos Admin</a>
+                    <a href="{% url 'insumos_admin_list' %}" class="nav-item">Insumos Admin</a>
+                    <a href="{% url 'asistencia_mi' %}" class="nav-item">Mi Asistencia</a>
+                {% endif %}
+                {% if request.session.user_rol == 'administrador' %}
+                    <a href="{% url 'reclamos_todos' %}" class="nav-item">Reclamos</a>
+                    <a href="{% url 'notificaciones_admin' %}" class="nav-item">Notif. Admin</a>
+                    <a href="{% url 'proveedor_estadisticas' %}" class="nav-item">Stats Proveedor</a>
+                    <a href="{% url 'admin_panel' %}" class="nav-item">Administración</a>
+                    <a href="{% url 'compras_listar' %}" class="nav-item">Compras</a>
+                    <a href="{% url 'stock_bajo_admin' %}" class="nav-item">Stock Bajo</a>
+                    <a href="{% url 'admin_funcionalidades' %}" class="nav-item">Funcionalidades</a>
+                    <a href="{% url 'sessions_list' %}" class="nav-item">Sesión</a>
+                    <a href="{% url 'registrar_empleado_ui' %}" class="nav-item">Nuevo Empleado</a>
+                    <a href="{% url 'registrar_administrador_ui' %}" class="nav-item">Nuevo Admin</a>
+                    <a href="{% url 'asistencia_admin_hoy' %}" class="nav-item">Asistencia Hoy</a>
+                    <a href="{% url 'auditoria_logs' %}" class="nav-item">Auditoría</a>
+                {% endif %}
+            {% endif %}
+            <div class="auth-links">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="nav-item">Mi Panel</a>
+                    <span style="padding:6px 10px;">Hola, {{ request.user.first_name|default:request.user.username }}</span>
+                    <a href="{% url 'logout' %}" class="nav-item button-secondary">Cerrar sesión</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-item button-secondary">Iniciar Sesión</a>
+                    <a href="{% url 'register' %}" class="nav-item button-primary">Registrarse</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+    {% if messages %}
+    <div style="max-width:1100px;margin:16px auto;padding:0 20px;">
+        {% for message in messages %}
+            <div style="padding:10px;border-radius:6px;margin-bottom:8px; background:#fff3cd; border:1px solid #ffeeba;">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="content-area">
+        {% block content %}{% endblock content %}
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 Super Merengones. Todos los derechos reservados.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock extra_js %}
+        <script>
+            // Intercept accidental navigations to /api/* from UI and remap to HTML views.
+            (function(){
+                const routeMap = {
+                    '/api/auth/login/': '/login/',
+                    '/api/auth/registrar-cliente/': '/register/',
+                    '/api/auth/logout/': '/logout/',
+                    '/api/pedidos/': '/pedidos/',
+                    '/api/cliente/pedidos/': '/pedidos/mis/',
+                    '/api/promociones/': '/promociones/',
+                    '/api/sedes/': '/sedes/',
+                    '/api/notificaciones/mis-notificaciones/': '/notificaciones/',
+                };
+                function remap(url){
+                    try {
+                        const u = new URL(url, window.location.origin);
+                        // Normalize with trailing slash
+                        const path = u.pathname.endsWith('/') ? u.pathname : (u.pathname + '/');
+                        if (path.startsWith('/api/')) {
+                            // Exact match first
+                            if (routeMap[path]) return routeMap[path];
+                            // Broad patterns
+                            if (path.startsWith('/api/pedidos/')) return '/pedidos/';
+                            if (path.startsWith('/api/auth/')) return '/login/';
+                        }
+                    } catch(e) { }
+                    return null;
+                }
+                // Intercept anchor clicks
+                document.addEventListener('click', function(ev){
+                    const a = ev.target.closest('a[href]');
+                    if (!a) return;
+                    const to = remap(a.href);
+                    if (to) {
+                        ev.preventDefault();
+                        window.location.href = to;
+                    }
+                }, true);
+                // Intercept form submissions
+                document.addEventListener('submit', function(ev){
+                    const f = ev.target;
+                    if (!f || !f.action) return;
+                    const to = remap(f.action);
+                    if (to) {
+                        ev.preventDefault();
+                        f.action = to;
+                        f.submit();
+                    }
+                }, true);
+            })();
+        </script>
+</body>
+</html>

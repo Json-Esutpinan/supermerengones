@@ -1,0 +1,13 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Editar Sede{% endblock %}
+{% block content %}
+<h2>Editar Sede</h2>
+<form method="post">
+  {% csrf_token %}
+  <div><label>Nombre:</label><input type="text" name="nombre" value="{{ sede.nombre }}" required></div>
+  <div><label>Dirección:</label><input type="text" name="direccion" value="{{ sede.direccion }}"></div>
+  <div><label>Teléfono:</label><input type="text" name="telefono" value="{{ sede.telefono }}"></div>
+  <button type="submit" class="btn btn-primary">Actualizar</button>
+  <a href="{% url 'sedes_admin_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

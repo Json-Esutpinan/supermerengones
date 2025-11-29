@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Administración{% endblock title %}
+{% block content %}
+<h2>Panel Administrativo</h2>
+<p>Rol: {{ request.session.user_rol }}</p>
+
+<h3>Usuarios</h3>
+<ul>
+    {% for u in users %}
+        <li>{{ u.email }} - {{ u.rol }} - {% if u.activo %}Activo{% else %}Inactivo{% endif %}</li>
+    {% empty %}<li>Sin usuarios</li>{% endfor %}
+</ul>
+
+<h3>Sedes</h3>
+<ul>
+    {% for s in sedes %}
+        <li>{{ s.nombre }} - {{ s.ciudad }}</li>
+    {% empty %}<li>Sin sedes</li>{% endfor %}
+</ul>
+
+<h3>Accesos rápidos</h3>
+<ul>
+    <li><a href="{% url 'reclamos_todos' %}">Reclamos</a></li>
+    <li><a href="{% url 'pedidos_todos' %}">Pedidos</a></li>
+    <li><a href="{% url 'productos' %}">Productos</a></li>
+    <li><a href="{% url 'promociones' %}">Promociones</a></li>
+    <li><a href="{% url 'admin_kpis' %}">KPIs</a></li>
+</ul>
+
+<hr/>
+<div>
+    <h3>Exportaciones</h3>
+    <ul>
+        <li><a href="{% url 'export_pedidos_csv' %}">Descargar pedidos (CSV)</a></li>
+        <li><a href="{% url 'export_productos_csv' %}">Descargar productos (CSV)</a></li>
+    </ul>
+    <p style="font-size:0.9rem;color:#666;">Los CSV incluyen columnas clave para análisis.</p>
+</div>
+
+{% endblock content %}

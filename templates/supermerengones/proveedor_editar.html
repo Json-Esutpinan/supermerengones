@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Editar Proveedor{% endblock title %}
+{% block content %}
+<h2>Editar Proveedor</h2>
+<form method="post">
+  {% csrf_token %}
+  <label>Nombre</label>
+  <input type="text" name="nombre" value="{{ proveedor.nombre }}" required>
+  <label>Teléfono</label>
+  <input type="text" name="telefono" value="{{ proveedor.telefono }}">
+  <label>Email</label>
+  <input type="email" name="email" value="{{ proveedor.email }}">
+  <label>Dirección</label>
+  <input type="text" name="direccion" value="{{ proveedor.direccion }}">
+  <button type="submit">Guardar</button>
+</form>
+{% endblock %}

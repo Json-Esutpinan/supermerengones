@@ -1,0 +1,28 @@
+{% extends 'supermerengones/base.html' %}
+{% block title %}Sedes (Admin){% endblock %}
+{% block content %}
+<h2>Sedes (Administración)</h2>
+<p><a href="{% url 'sede_crear' %}" class="btn btn-sm btn-primary">Nueva Sede</a></p>
+<table class="table table-striped">
+  <thead>
+    <tr><th>ID</th><th>Nombre</th><th>Dirección</th><th>Teléfono</th><th>Estado</th><th>Acciones</th></tr>
+  </thead>
+  <tbody>
+    {% for s in sedes %}
+    <tr>
+      <td>{{ s.id_sede }}</td>
+      <td>{{ s.nombre }}</td>
+      <td>{{ s.direccion|default:'-' }}</td>
+      <td>{{ s.telefono|default:'-' }}</td>
+      <td>{% if s.activo %}Activo{% else %}<span style="color:#dc3545;">Inactivo</span>{% endif %}</td>
+      <td>
+        <a href="{% url 'sede_editar' s.id_sede %}" class="btn btn-sm btn-secondary">Editar</a>
+        <a href="{% url 'sede_toggle_estado' s.id_sede %}" class="btn btn-sm btn-warning">{% if s.activo %}Desactivar{% else %}Activar{% endif %}</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No hay sedes registradas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
