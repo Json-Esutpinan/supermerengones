@@ -625,7 +625,18 @@ def carrito(request):
                 'descuento_aplicado': descuento_aplicado,
             })
     
-    context = {'items': items}
+    # Calcular subtotal, impuestos y total
+    subtotal = sum(item['total'] for item in items)
+    tax_rate = 0.19  # Impuesto sobre venta (19%)
+    tax = subtotal * tax_rate
+    total = subtotal + tax
+    
+    context = {
+        'items': items,
+        'subtotal': subtotal,
+        'tax': tax,
+        'total': total,
+    }
     return render(request, 'supermerengones/carrito.html', context)
 
 

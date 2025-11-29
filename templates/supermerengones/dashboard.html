@@ -1,18 +1,211 @@
 {% extends "base.html" %}
 
-{% block title %}Panel | Super Merengones{% endblock title %}
+{% block title %}Mi Panel | Super Merengones{% endblock title %}
 
 {% block content %}
-<section style="max-width:900px;margin:40px auto;padding:20px;background:white;border-radius:8px;">
-    <h2>Panel de Usuario</h2>
-    <p>Bienvenido, <strong>{{ request.user.first_name|default:request.user.username }}</strong>. Aquí tienes las acciones disponibles:</p>
-    <ul style="list-style:none;padding:0;margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
-        {% for a in actions %}
-        <li style="background:#fff7fb;border:1px solid #ffdce6;padding:12px;border-radius:8px;">
-            <a href="{{ a.url }}" style="text-decoration:none;color:var(--color-vino);font-weight:700;">{{ a.label }}</a>
-        </li>
-        {% endfor %}
-    </ul>
-    <p style="margin-top:18px;"><a href="{% url 'logout' %}" class="button-secondary">Cerrar sesión</a></p>
-</section>
+<style>
+	.dashboard-header {
+		background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+		color: white;
+		padding: 50px 20px;
+		border-radius: 12px;
+		margin-bottom: 40px;
+	}
+
+	.dashboard-header h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2.2rem;
+		margin-bottom: 8px;
+	}
+
+	.dashboard-user-info {
+		font-size: 1.1rem;
+		opacity: 0.95;
+	}
+
+	.dashboard-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 25px;
+		margin-bottom: 40px;
+	}
+
+	.dashboard-card {
+		background: white;
+		border-radius: 12px;
+		padding: 25px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+		transition: all 0.3s ease;
+		border-left: 4px solid var(--primary);
+		display: flex;
+		flex-direction: column;
+	}
+
+	.dashboard-card:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+	}
+
+	.dashboard-card-icon {
+		font-size: 2.5rem;
+		margin-bottom: 12px;
+	}
+
+	.dashboard-card-title {
+		font-size: 1.2rem;
+		font-weight: 700;
+		color: var(--dark);
+		margin-bottom: 10px;
+	}
+
+	.dashboard-card-description {
+		color: var(--text);
+		font-size: 0.9rem;
+		margin-bottom: 20px;
+		flex-grow: 1;
+	}
+
+	.dashboard-card-link {
+		display: inline-block;
+		background: var(--primary);
+		color: white;
+		padding: 10px 16px;
+		border-radius: 6px;
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 0.9rem;
+		transition: all 0.3s ease;
+		text-align: center;
+	}
+
+	.dashboard-card-link:hover {
+		background: var(--primary-dark);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(231, 84, 128, 0.3);
+	}
+
+	.dashboard-stats {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 20px;
+		margin-bottom: 40px;
+	}
+
+	.stat-card {
+		background: white;
+		padding: 20px;
+		border-radius: 12px;
+		text-align: center;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	}
+
+	.stat-icon {
+		font-size: 2.2rem;
+		margin-bottom: 10px;
+	}
+
+	.stat-value {
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--primary);
+		margin-bottom: 5px;
+	}
+
+	.stat-label {
+		font-size: 0.9rem;
+		color: var(--text);
+	}
+
+	.logout-button {
+		background: var(--danger);
+		color: white;
+		padding: 12px 24px;
+		border-radius: 6px;
+		text-decoration: none;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		display: inline-block;
+	}
+
+	.logout-button:hover {
+		background: #c82333;
+		transform: translateY(-2px);
+	}
+
+	.dashboard-footer {
+		background: linear-gradient(135deg, #f5e6eb 0%, #ffe6f0 100%);
+		padding: 30px;
+		border-radius: 12px;
+		text-align: center;
+		color: var(--dark);
+		margin-top: 40px;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.dashboard-header h1 {
+			font-size: 1.8rem;
+		}
+
+		.dashboard-grid,
+		.dashboard-stats {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<div class="dashboard-header">
+	<h1>👋 ¡Bienvenido!</h1>
+	<div class="dashboard-user-info">
+		Hola <strong>{{ request.user.first_name|default:request.user.username }}</strong>, aquí puedes gestionar tu cuenta y pedidos
+	</div>
+</div>
+
+<div class="dashboard-stats">
+	<div class="stat-card">
+		<div class="stat-icon">📦</div>
+		<div class="stat-value">0</div>
+		<div class="stat-label">Pedidos Activos</div>
+	</div>
+	<div class="stat-card">
+		<div class="stat-icon">💳</div>
+		<div class="stat-value">0</div>
+		<div class="stat-label">Compras Totales</div>
+	</div>
+	<div class="stat-card">
+		<div class="stat-icon">⭐</div>
+		<div class="stat-value">0</div>
+		<div class="stat-label">Puntos Acumulados</div>
+	</div>
+	<div class="stat-card">
+		<div class="stat-icon">💰</div>
+		<div class="stat-value">$0</div>
+		<div class="stat-label">Gastado</div>
+	</div>
+</div>
+
+<div class="dashboard-grid">
+	{% for a in actions %}
+	<div class="dashboard-card">
+		<div class="dashboard-card-icon">
+			{% if 'Pedido' in a.label %}📦{% elif 'Reclamo' in a.label %}⚠️{% elif 'Notificacion' in a.label %}🔔{% elif 'Perfil' in a.label %}👤{% elif 'Turno' in a.label %}⏰{% elif 'Compra' in a.label %}💳{% elif 'Producto' in a.label %}🍰{% elif 'Admin' in a.label %}⚙️{% else %}📋{% endif %}
+		</div>
+		<div class="dashboard-card-title">{{ a.label }}</div>
+		<div class="dashboard-card-description">
+			Accede a tu área de {{ a.label|lower }}
+		</div>
+		<a href="{{ a.url }}" class="dashboard-card-link">Ir →</a>
+	</div>
+	{% endfor %}
+</div>
+
+<div class="dashboard-footer">
+	<h3 style="margin: 0 0 12px 0;">¿Necesitas Ayuda?</h3>
+	<p style="margin: 0; color: var(--text);">Si tienes preguntas sobre tus pedidos o promociones, contáctanos a través de nuestros <a href="{% url 'sedes' %}" style="color: var(--primary); text-decoration: none; font-weight: 600;">canales de atención</a></p>
+</div>
+
+<div style="text-align: center; margin-top: 40px;">
+	<a href="{% url 'logout' %}" class="logout-button">🚪 Cerrar Sesión</a>
+</div>
+
 {% endblock content %}

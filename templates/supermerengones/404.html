@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Acceso Denegado{% endblock title %}
+{% block title %}Página No Encontrada{% endblock title %}
 {% block content %}
 <style>
 	.error-container {
@@ -50,17 +50,17 @@
 </style>
 
 <div class="error-container">
-	<div class="error-icon">🚫</div>
-	<div class="error-code">403</div>
-	<h1 class="error-title">Acceso Restringido</h1>
+	<div class="error-icon">🔍</div>
+	<div class="error-code">404</div>
+	<h1 class="error-title">Página No Encontrada</h1>
 	<p class="error-message">
-		No tienes permisos para acceder a esta página. 
+		Lo sentimos, la página que buscas no existe o ha sido movida.
 		<br><br>
-		Si crees que es un error, por favor contacta al administrador o intenta con una cuenta diferente.
+		Verifica la URL e intenta nuevamente, o navega a través del menú principal.
 	</p>
 	<div class="error-actions">
 		<a href="{% url 'index' %}" class="btn btn-primary">Ir al Inicio</a>
-		<a href="{% url 'dashboard' %}" class="btn btn-secondary">Mi Panel</a>
+		<a href="{% url 'productos' %}" class="btn btn-secondary">Ver Productos</a>
 	</div>
 </div>
 {% endblock %}

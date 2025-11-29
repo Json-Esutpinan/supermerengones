@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Acceso Denegado{% endblock title %}
+{% block title %}Error del Servidor{% endblock title %}
 {% block content %}
 <style>
 	.error-container {
@@ -15,7 +15,7 @@
 	.error-code {
 		font-size: 5rem;
 		font-weight: 700;
-		background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+		background: linear-gradient(135deg, var(--danger) 0%, #c82333 100%);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -50,13 +50,13 @@
 </style>
 
 <div class="error-container">
-	<div class="error-icon">🚫</div>
-	<div class="error-code">403</div>
-	<h1 class="error-title">Acceso Restringido</h1>
+	<div class="error-icon">⚠️</div>
+	<div class="error-code">500</div>
+	<h1 class="error-title">Error del Servidor</h1>
 	<p class="error-message">
-		No tienes permisos para acceder a esta página. 
+		Disculpa, algo salió mal en nuestros servidores.
 		<br><br>
-		Si crees que es un error, por favor contacta al administrador o intenta con una cuenta diferente.
+		Estamos trabajando para solucionar este problema lo antes posible. Por favor, intenta más tarde.
 	</p>
 	<div class="error-actions">
 		<a href="{% url 'index' %}" class="btn btn-primary">Ir al Inicio</a>
