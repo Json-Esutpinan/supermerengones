@@ -37,17 +37,25 @@ class ProductoDAO:
                 'activo': producto.activo
             }
             
+            print(f"DEBUG DAO - Intentando insertar: {datos}")
+            
             response = self.supabase.table(self.tabla)\
                 .insert(datos)\
                 .execute()
             
+            print(f"DEBUG DAO - Response: {response}")
+            
             if response.data:
+                print(f"DEBUG DAO - Datos insertados: {response.data[0]}")
                 return Producto.from_dict(response.data[0])
             
+            print(f"DEBUG DAO - No se recibieron datos en la respuesta")
             return None
             
         except Exception as e:
             print(f"Error al insertar producto: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def obtener_por_id(self, id_producto):

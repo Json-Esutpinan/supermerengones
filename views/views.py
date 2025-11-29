@@ -2267,7 +2267,9 @@ def productos_admin_list(request):
 @role_required('administrador')
 def producto_crear(request):
     """Crear producto (admin)."""
+    print(f"DEBUG - producto_crear llamado, método: {request.method}")
     if request.method == 'POST':
+        print(f"DEBUG - POST data: {request.POST}")
         codigo = request.POST.get('codigo')
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
@@ -2275,10 +2277,15 @@ def producto_crear(request):
         contenido = request.POST.get('contenido')
         precio = request.POST.get('precio')
         stock = request.POST.get('stock') or 0
+        
+        # Debug: Imprimir datos recibidos
+        print(f"DEBUG - Datos recibidos: codigo={codigo}, nombre={nombre}, precio={precio}, stock={stock}")
+        
         # Unicidad códigos
         try:
             existentes = {p.codigo for p in producto_dao.listar_todos(limite=1000) if p.codigo}
-        except Exception:
+        except Exception as e:
+            print(f"DEBUG - Error al listar existentes: {e}")
             existentes = set()
         errors = validate_producto(codigo, nombre, precio, descripcion, id_unidad, contenido, existing_codigos=existentes)
         # Validar stock
@@ -2286,21 +2293,28 @@ def producto_crear(request):
             s_val = int(stock)
             if s_val < 0:
                 errors['stock'] = 'Stock debe ser >= 0'
-        except Exception:
+        except Exception as e:
+            print(f"DEBUG - Error validando stock: {e}")
             errors['stock'] = 'Stock inválido'
         if errors:
+            print(f"DEBUG - Errores de validación: {errors}")
             for f, m in errors.items():
                 messages.error(request, f"{f}: {m}")
             return render(request, 'supermerengones/producto_crear.html')
         from entidades.producto import Producto
         try:
             prod = Producto(codigo=codigo, nombre=nombre, descripcion=descripcion, id_unidad=id_unidad, contenido=contenido, precio=precio, stock=stock, activo=True)
+            print(f"DEBUG - Producto creado en memoria: {prod}")
             creado = producto_dao.insertar(prod)
+            print(f"DEBUG - Resultado inserción: {creado}")
             if creado:
-                messages.success(request, 'Producto creado')
+                messages.success(request, 'Producto creado correctamente')
                 return redirect('productos_admin_list')
-            messages.error(request, 'No se pudo crear producto')
+            messages.error(request, 'No se pudo crear producto en la base de datos')
         except Exception as e:
+            print(f"DEBUG - Error al crear producto: {e}")
+            import traceback
+            traceback.print_exc()
             messages.error(request, f'Error: {str(e)}')
     return render(request, 'supermerengones/producto_crear.html')
 
